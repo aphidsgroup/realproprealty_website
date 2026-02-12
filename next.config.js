@@ -8,6 +8,8 @@ const withPWA = require('next-pwa')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
+    // Required for Cloudflare Pages
+    output: 'standalone',
 };
 
 module.exports = withPWA(nextConfig);
