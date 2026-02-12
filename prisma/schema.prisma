@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Property {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  usageType       String   // "residential" or "commercial"
+  propertySubtype String?  // e.g., "apartment", "villa", "office"
+  areaName        String
+  city            String   @default("Chennai")
+  priceInr        Int      // Sale price
+  sizeSqft        Int
+  bedrooms        Int?
+  bathrooms       Int?
+  parking         String?  // e.g., "2 covered", "1 open"
+  amenities       String   // JSON array as string
+  tourEmbedUrl    String
+  images          String?  // JSON array of image paths
+  floorPlans      String?  // JSON array of floor plan file paths (images and PDFs)
+  facilities      String?  // JSON array of facility names
+  locationAdvantages String? // JSON array of location objects with name, category, distance
+  constructionStatus String? // Construction status: "Under Construction", "Ready to Move", "Upcoming"
+  isPublished     Boolean  @default(false)
+  isFeatured      Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([usageType])
+  @@index([areaName])
+  @@index([isPublished])
+  @@index([isFeatured])
+}
+
+model SiteSettings {
+  id                   String   @id @default(cuid())
+  brandName            String   @default("Realprop Realty")
+  tagline              String   @default("360° Tours • Premium Properties • Chennai")
+  city                 String   @default("Chennai")
+  whatsappNumber       String   @default("+919876543210")
+  phoneNumber          String   @default("+919876543210")
+  whatsappTemplate     String   @default("Hi, I'm interested in {propertyTitle}. Link: {propertyUrl}")
+  amenitiesVocabulary  String   @default("[\"Lift\",\"Parking\",\"Security\",\"Power Backup\",\"Water Supply\",\"Gym\",\"Swimming Pool\",\"Garden\",\"Play Area\",\"Club House\"]")
+  updatedAt            DateTime @updatedAt
+}
