@@ -5,6 +5,10 @@ import PropertyCard from '@/components/PropertyCard';
 import FilterSheet from '@/components/FilterSheet';
 import { DealType, UsageType } from '@/lib/types';
 
+// Force dynamic rendering - don't pre-render at build time
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface ListPageProps {
     searchParams: Promise<{
         use?: UsageType;

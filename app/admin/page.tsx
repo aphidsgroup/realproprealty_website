@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 
+// Force dynamic rendering - don't pre-render at build time
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getStats() {
     const [totalProperties, publishedProperties, residentialProperties, commercialProperties] = await Promise.all([
         prisma.property.count(),

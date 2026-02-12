@@ -4,6 +4,10 @@ import { prisma } from '@/lib/db';
 import { parseAmenities } from '@/lib/utils';
 import PropertyCarousel from '@/components/PropertyCarousel';
 
+// Force dynamic rendering - don't pre-render at build time
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getSiteSettings() {
     const settings = await prisma.siteSettings.findUnique({
         where: { id: 'default' },
