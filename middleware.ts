@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getSession } from '@/lib/auth';
+import { getIronSession } from 'iron-session';
+import { cookies } from 'next/headers';
+
+interface SessionData {
+    userId: string;
+    email: string;
+    isLoggedIn: boolean;
+}
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -12,9 +19,23 @@ export async function middleware(request: NextRequest) {
 
     // Protect all /admin routes
     if (pathname.startsWith('/admin')) {
-        const session = await getSession();
+        try {
+            const session = await getIronSession<SessionData>(await cookies(), {
+                password: process.env.SESSION_SECRET || 'default-secret-change-me-in-production-please',
+                cookieName: 'realprop_session',
+                cookieOptions: {
+                    secure: process.env.NODE_ENV === 'production',
+                    httpOnly: true,
+                    sameSite: 'lax' as const,
+                    maxAge: 60 * 60 * 24 * 7,
+                },
+            });
 
-        if (!session.isLoggedIn) {
+            if (!session.isLoggedIn) {
+                return NextResponse.redirect(new URL('/admin/login', request.url));
+            }
+        } catch (error) {
+            console.error('Middleware session error:', error);
             return NextResponse.redirect(new URL('/admin/login', request.url));
         }
     }

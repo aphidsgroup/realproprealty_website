@@ -30,47 +30,62 @@ async function getProperties(filters: {
     maxSize?: number;
     amenities?: string[];
 }) {
-    const where: any = {
-        isPublished: true,
-    };
+    try {
+        const where: any = {
+            isPublished: true,
+        };
 
-    if (filters.use) where.usageType = filters.use;
-    if (filters.area) where.areaName = filters.area;
-    if (filters.minPrice) where.priceInr = { ...where.priceInr, gte: filters.minPrice };
-    if (filters.maxPrice) where.priceInr = { ...where.priceInr, lte: filters.maxPrice };
-    if (filters.minSize) where.sizeSqft = { ...where.sizeSqft, gte: filters.minSize };
-    if (filters.maxSize) where.sizeSqft = { ...where.sizeSqft, lte: filters.maxSize };
+        if (filters.use) where.usageType = filters.use;
+        if (filters.area) where.areaName = filters.area;
+        if (filters.minPrice) where.priceInr = { ...where.priceInr, gte: filters.minPrice };
+        if (filters.maxPrice) where.priceInr = { ...where.priceInr, lte: filters.maxPrice };
+        if (filters.minSize) where.sizeSqft = { ...where.sizeSqft, gte: filters.minSize };
+        if (filters.maxSize) where.sizeSqft = { ...where.sizeSqft, lte: filters.maxSize };
 
-    const properties = await prisma.property.findMany({
-        where,
-        orderBy: { createdAt: 'desc' },
-    });
-
-    // Filter by amenities (client-side since SQLite doesn't support JSON queries easily)
-    if (filters.amenities && filters.amenities.length > 0) {
-        return properties.filter(property => {
-            const propAmenities = parseAmenities(property.amenities);
-            return filters.amenities!.every(amenity => propAmenities.includes(amenity));
+        const properties = await prisma.property.findMany({
+            where,
+            orderBy: { createdAt: 'desc' },
         });
-    }
 
-    return properties;
+        // Filter by amenities (client-side since SQLite doesn't support JSON queries easily)
+        if (filters.amenities && filters.amenities.length > 0) {
+            return properties.filter(property => {
+                const propAmenities = parseAmenities(property.amenities);
+                return filters.amenities!.every(amenity => propAmenities.includes(amenity));
+            });
+        }
+
+        return properties;
+    } catch (error) {
+        console.error('Error fetching properties:', error);
+        return [];
+    }
 }
 
 async function getUniqueAreas() {
-    const properties = await prisma.property.findMany({
-        where: { isPublished: true },
-        select: { areaName: true },
-        distinct: ['areaName'],
-    });
-    return properties.map(p => p.areaName).sort();
+    try {
+        const properties = await prisma.property.findMany({
+            where: { isPublished: true },
+            select: { areaName: true },
+            distinct: ['areaName'],
+        });
+        return properties.map(p => p.areaName).sort();
+    } catch (error) {
+        console.error('Error fetching areas:', error);
+        return [];
+    }
 }
 
 async function getAmenitiesVocabulary() {
-    const settings = await prisma.siteSettings.findUnique({
-        where: { id: 'default' },
-    });
-    return settings ? JSON.parse(settings.amenitiesVocabulary) : [];
+    try {
+        const settings = await prisma.siteSettings.findUnique({
+            where: { id: 'default' },
+        });
+        return settings ? JSON.parse(settings.amenitiesVocabulary) : [];
+    } catch (error) {
+        console.error('Error fetching amenities:', error);
+        return [];
+    }
 }
 
 export default async function ListPage({ searchParams }: ListPageProps) {

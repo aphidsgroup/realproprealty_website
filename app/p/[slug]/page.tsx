@@ -16,35 +16,50 @@ interface PropertyPageProps {
 }
 
 async function getProperty(slug: string) {
-    const property = await prisma.property.findUnique({
-        where: { slug, isPublished: true },
-    });
-    return property;
+    try {
+        const property = await prisma.property.findUnique({
+            where: { slug, isPublished: true },
+        });
+        return property;
+    } catch (error) {
+        console.error('Error fetching property:', error);
+        return null;
+    }
 }
 
 async function getSiteSettings() {
-    const settings = await prisma.siteSettings.findUnique({
-        where: { id: 'default' },
-    });
-    return settings;
+    try {
+        const settings = await prisma.siteSettings.findUnique({
+            where: { id: 'default' },
+        });
+        return settings;
+    } catch (error) {
+        console.error('Error fetching site settings:', error);
+        return null;
+    }
 }
 
 async function getRelatedProperties(currentPropertyId: string, usageType: string, city: string) {
-    const relatedProperties = await prisma.property.findMany({
-        where: {
-            isPublished: true,
-            id: { not: currentPropertyId },
-            OR: [
-                { usageType: usageType },
-                { city: city }
-            ]
-        },
-        take: 6,
-        orderBy: {
-            createdAt: 'desc'
-        }
-    });
-    return relatedProperties;
+    try {
+        const relatedProperties = await prisma.property.findMany({
+            where: {
+                isPublished: true,
+                id: { not: currentPropertyId },
+                OR: [
+                    { usageType: usageType },
+                    { city: city }
+                ]
+            },
+            take: 6,
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+        return relatedProperties;
+    } catch (error) {
+        console.error('Error fetching related properties:', error);
+        return [];
+    }
 }
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
@@ -197,10 +212,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6">
                             <div className="flex items-center gap-4">
                                 <div className={`px-6 py-3 rounded-xl font-semibold text-lg ${property.constructionStatus === 'Ready to Move'
-                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                        : property.constructionStatus === 'Under Construction'
-                                            ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
-                                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                                    : property.constructionStatus === 'Under Construction'
+                                        ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
+                                        : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
                                     }`}>
                                     {property.constructionStatus}
                                 </div>

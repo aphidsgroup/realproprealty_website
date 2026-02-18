@@ -6,21 +6,30 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 async function getStats() {
-    const [totalProperties, publishedProperties, residentialProperties, commercialProperties] = await Promise.all([
-        prisma.property.count(),
-        prisma.property.count({ where: { isPublished: true } }),
-        prisma.property.count({ where: { usageType: 'residential', isPublished: true } }),
-        prisma.property.count({ where: { usageType: 'commercial', isPublished: true } }),
-    ]);
-
-    return { totalProperties, publishedProperties, residentialProperties, commercialProperties };
+    try {
+        const [totalProperties, publishedProperties, residentialProperties, commercialProperties] = await Promise.all([
+            prisma.property.count(),
+            prisma.property.count({ where: { isPublished: true } }),
+            prisma.property.count({ where: { usageType: 'residential', isPublished: true } }),
+            prisma.property.count({ where: { usageType: 'commercial', isPublished: true } }),
+        ]);
+        return { totalProperties, publishedProperties, residentialProperties, commercialProperties };
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+        return { totalProperties: 0, publishedProperties: 0, residentialProperties: 0, commercialProperties: 0 };
+    }
 }
 
 async function getRecentProperties() {
-    return prisma.property.findMany({
-        orderBy: { createdAt: 'desc' },
-        take: 5,
-    });
+    try {
+        return await prisma.property.findMany({
+            orderBy: { createdAt: 'desc' },
+            take: 5,
+        });
+    } catch (error) {
+        console.error('Error fetching recent properties:', error);
+        return [];
+    }
 }
 
 export default async function AdminDashboard() {

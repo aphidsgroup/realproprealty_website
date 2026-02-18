@@ -9,24 +9,34 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 async function getSiteSettings() {
-    const settings = await prisma.siteSettings.findUnique({
-        where: { id: 'default' },
-    });
-    return settings;
+    try {
+        const settings = await prisma.siteSettings.findUnique({
+            where: { id: 'default' },
+        });
+        return settings;
+    } catch (error) {
+        console.error('Error fetching site settings:', error);
+        return null;
+    }
 }
 
 async function getFeaturedProperties() {
-    const properties = await prisma.property.findMany({
-        where: {
-            isPublished: true,
-        },
-        orderBy: [
-            { isFeatured: 'desc' },
-            { createdAt: 'desc' },
-        ],
-        take: 10,
-    });
-    return properties;
+    try {
+        const properties = await prisma.property.findMany({
+            where: {
+                isPublished: true,
+            },
+            orderBy: [
+                { isFeatured: 'desc' },
+                { createdAt: 'desc' },
+            ],
+            take: 10,
+        });
+        return properties;
+    } catch (error) {
+        console.error('Error fetching featured properties:', error);
+        return [];
+    }
 }
 
 export default async function HomePage() {
