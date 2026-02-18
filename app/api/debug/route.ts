@@ -5,16 +5,38 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+    const dbUrl = process.env.DATABASE_URL || '';
+    const directUrl = process.env.DIRECT_URL || '';
+
+    // Mask the password but show enough to debug
+    const maskUrl = (url: string) => {
+        try {
+            const parsed = new URL(url);
+            const user = parsed.username;
+            const pass = parsed.password;
+            const maskedPass = pass ? pass.substring(0, 6) + '***' + pass.substring(pass.length - 3) : 'EMPTY';
+            return {
+                protocol: parsed.protocol,
+                username: user,
+                password_preview: maskedPass,
+                password_length: pass.length,
+                host: parsed.hostname,
+                port: parsed.port,
+                pathname: parsed.pathname,
+                search: parsed.search,
+            };
+        } catch (e) {
+            return { error: 'Could not parse URL', raw_preview: url.substring(0, 80) + '...' };
+        }
+    };
+
     const diagnostics: Record<string, any> = {
         timestamp: new Date().toISOString(),
-        env: {
-            DATABASE_URL_SET: !!process.env.DATABASE_URL,
-            DATABASE_URL_PREFIX: process.env.DATABASE_URL?.substring(0, 50) + '...',
-            DIRECT_URL_SET: !!process.env.DIRECT_URL,
-            SESSION_SECRET_SET: !!process.env.SESSION_SECRET,
-            NODE_ENV: process.env.NODE_ENV,
-        },
-        database: {
+        database_url: maskUrl(dbUrl),
+        direct_url: maskUrl(directUrl),
+        session_secret_set: !!process.env.SESSION_SECRET,
+        node_env: process.env.NODE_ENV,
+        connection_test: {
             connected: false,
             error: null as string | null,
             propertyCount: 0,
@@ -24,18 +46,17 @@ export async function GET() {
     };
 
     try {
-        // Test database connection
         const propertyCount = await prisma.property.count();
         const adminCount = await prisma.admin.count();
         const settings = await prisma.siteSettings.findUnique({ where: { id: 'default' } });
 
-        diagnostics.database.connected = true;
-        diagnostics.database.propertyCount = propertyCount;
-        diagnostics.database.adminCount = adminCount;
-        diagnostics.database.settingsExist = !!settings;
+        diagnostics.connection_test.connected = true;
+        diagnostics.connection_test.propertyCount = propertyCount;
+        diagnostics.connection_test.adminCount = adminCount;
+        diagnostics.connection_test.settingsExist = !!settings;
     } catch (error) {
-        diagnostics.database.connected = false;
-        diagnostics.database.error = error instanceof Error ? error.message : String(error);
+        diagnostics.connection_test.connected = false;
+        diagnostics.connection_test.error = error instanceof Error ? error.message : String(error);
     }
 
     return NextResponse.json(diagnostics, { status: 200 });
