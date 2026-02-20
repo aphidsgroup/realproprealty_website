@@ -15,6 +15,10 @@ export const metadata: Metadata = {
     title: "Realprop Realty - 360° Property Tours",
     description: "Find your perfect property in Chennai with immersive 360° virtual tours. Premium Residential and Commercial properties.",
     manifest: "/manifest.json",
+    icons: {
+        icon: "/logo.png",
+        apple: "/logo.png",
+    },
     appleWebApp: {
         capable: true,
         statusBarStyle: "default",
