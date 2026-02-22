@@ -81,13 +81,13 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     const propertyUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/p/${property.slug}`;
 
     const whatsappUrl = buildWhatsAppUrl(
-        settings?.whatsappNumber || '+919876543210',
+        settings?.whatsappNumber || '+919360393324',
         settings?.whatsappTemplate || 'Hi, I\'m interested in {propertyTitle}. Link: {propertyUrl}',
         property.title,
         propertyUrl
     );
 
-    const callUrl = `tel:${settings?.phoneNumber || '+919876543210'}`;
+    const callUrl = `tel:${settings?.phoneNumber || '+919360393324'}`;
 
     return (
         <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24">

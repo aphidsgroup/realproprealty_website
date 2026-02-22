@@ -166,7 +166,7 @@ export default function SettingsPage() {
                                 required
                                 value={formData.whatsappNumber}
                                 onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
-                                placeholder="+919876543210"
+                                placeholder="+919360393324"
                                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                             />
                         </div>
@@ -180,7 +180,7 @@ export default function SettingsPage() {
                                 required
                                 value={formData.phoneNumber}
                                 onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                                placeholder="+919876543210"
+                                placeholder="+919360393324"
                                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                             />
                         </div>

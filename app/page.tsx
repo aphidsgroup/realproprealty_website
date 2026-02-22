@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { prisma } from '@/lib/db';
 import { parseAmenities } from '@/lib/utils';
 import PropertyCarousel from '@/components/PropertyCarousel';
+import SearchBar from '@/components/SearchBar';
 
 // ISR: Cache page at edge, revalidate every 60 seconds in background
 export const revalidate = 60;
@@ -38,10 +39,25 @@ async function getFeaturedProperties() {
     }
 }
 
+async function getUniqueAreas() {
+    try {
+        const properties = await prisma.property.findMany({
+            where: { isPublished: true },
+            select: { areaName: true },
+            distinct: ['areaName'],
+        });
+        return properties.map(p => p.areaName).sort();
+    } catch (error) {
+        console.error('Error fetching areas:', error);
+        return [];
+    }
+}
+
 export default async function HomePage() {
-    const [settings, featuredProperties] = await Promise.all([
+    const [settings, featuredProperties, areas] = await Promise.all([
         getSiteSettings(),
         getFeaturedProperties(),
+        getUniqueAreas(),
     ]);
 
     const whatsappUrl = `https://wa.me/${settings?.whatsappNumber?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hi, I want to know more about properties - Realprop Realty')}`;
@@ -65,7 +81,7 @@ export default async function HomePage() {
                         </div>
                     </div>
                     <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                        Your Trusted Real Estate Partner
+                        Your Trusted<br />Real Estate Partner
                     </h1>
                     <p className="text-lg text-gray-600 dark:text-gray-400">
                         {settings?.tagline || '360° Tours • Premium Properties • Chennai'}
@@ -74,17 +90,7 @@ export default async function HomePage() {
 
                 {/* Search */}
                 <div className="mb-6">
-                    <Link
-                        href="/list"
-                        className="block bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-4"
-                    >
-                        <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                            <span>Search by area or keyword...</span>
-                        </div>
-                    </Link>
+                    <SearchBar areas={areas} />
                 </div>
 
                 {/* Primary CTAs */}

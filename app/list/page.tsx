@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { parseAmenities } from '@/lib/utils';
 import PropertyCard from '@/components/PropertyCard';
 import FilterSheet from '@/components/FilterSheet';
+import ListHeader from '@/components/ListHeader';
 import { DealType, UsageType } from '@/lib/types';
 
 // ISR: Cache page at edge, revalidate every 30 seconds
@@ -109,44 +110,7 @@ export default async function ListPage({ searchParams }: ListPageProps) {
     return (
         <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
             {/* Header */}
-            <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30 shadow-sm">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between mb-4">
-                        <Link href="/" className="flex items-center gap-2 text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                            <span className="font-semibold">Back</span>
-                        </Link>
-                        <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                            Properties
-                        </h1>
-                        <div className="w-20" /> {/* Spacer for centering */}
-                    </div>
-
-                    {/* Usage Type Toggle */}
-                    <div className="flex gap-2">
-                        <Link
-                            href="/list?use=residential"
-                            className={`flex-1 px-4 py-2.5 rounded-xl font-semibold text-center transition-all duration-300 ${params.use === 'residential' || !params.use
-                                ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md'
-                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                }`}
-                        >
-                            Residential
-                        </Link>
-                        <Link
-                            href="/list?use=commercial"
-                            className={`flex-1 px-4 py-2.5 rounded-xl font-semibold text-center transition-all duration-300 ${params.use === 'commercial'
-                                ? 'bg-gradient-to-r from-accent-500 to-accent-600 text-white shadow-md'
-                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                }`}
-                        >
-                            Commercial
-                        </Link>
-                    </div>
-                </div>
-            </header>
+            <ListHeader areas={areas} currentUse={params.use} currentArea={params.area} />
 
             {/* Results */}
             <div className="container mx-auto px-4 py-6 pb-24">

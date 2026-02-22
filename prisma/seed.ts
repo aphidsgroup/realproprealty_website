@@ -31,8 +31,8 @@ async function main() {
             brandName: 'Realprop Realty',
             tagline: '360° Tours • Premium Properties • Chennai',
             city: 'Chennai',
-            whatsappNumber: '+919876543210',
-            phoneNumber: '+919876543210',
+            whatsappNumber: '+919360393324',
+            phoneNumber: '+919360393324',
             whatsappTemplate: 'Hi, I\'m interested in {propertyTitle}. Link: {propertyUrl} - Realprop Realty',
             amenitiesVocabulary: JSON.stringify([
                 // Common amenities
