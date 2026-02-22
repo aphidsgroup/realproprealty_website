@@ -4,9 +4,8 @@ import { prisma } from '@/lib/db';
 import { parseAmenities } from '@/lib/utils';
 import PropertyCarousel from '@/components/PropertyCarousel';
 
-// Force dynamic rendering - don't pre-render at build time
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// ISR: Cache page at edge, revalidate every 60 seconds in background
+export const revalidate = 60;
 
 async function getSiteSettings() {
     try {
@@ -40,8 +39,10 @@ async function getFeaturedProperties() {
 }
 
 export default async function HomePage() {
-    const settings = await getSiteSettings();
-    const featuredProperties = await getFeaturedProperties();
+    const [settings, featuredProperties] = await Promise.all([
+        getSiteSettings(),
+        getFeaturedProperties(),
+    ]);
 
     const whatsappUrl = `https://wa.me/${settings?.whatsappNumber?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hi, I want to know more about properties - Realprop Realty')}`;
     const callUrl = `tel:${settings?.phoneNumber}`;

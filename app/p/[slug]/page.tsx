@@ -9,6 +9,9 @@ import PropertyCarousel from '@/components/PropertyCarousel';
 import CarouselWrapper from '@/components/CarouselWrapper';
 import ViewAllButton from '@/components/ViewAllButton';
 
+// ISR: Cache page at edge, revalidate every 60 seconds
+export const revalidate = 60;
+
 interface PropertyPageProps {
     params: Promise<{
         slug: string;
@@ -64,8 +67,10 @@ async function getRelatedProperties(currentPropertyId: string, usageType: string
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
     const { slug } = await params;
-    const property = await getProperty(slug);
-    const settings = await getSiteSettings();
+    const [property, settings] = await Promise.all([
+        getProperty(slug),
+        getSiteSettings(),
+    ]);
     const relatedProperties = await getRelatedProperties(property?.id || '', property?.usageType || '', property?.city || '');
 
     if (!property) {

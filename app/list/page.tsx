@@ -5,9 +5,8 @@ import PropertyCard from '@/components/PropertyCard';
 import FilterSheet from '@/components/FilterSheet';
 import { DealType, UsageType } from '@/lib/types';
 
-// Force dynamic rendering - don't pre-render at build time
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// ISR: Cache page at edge, revalidate every 30 seconds
+export const revalidate = 30;
 
 interface ListPageProps {
     searchParams: Promise<{
@@ -101,9 +100,11 @@ export default async function ListPage({ searchParams }: ListPageProps) {
         amenities: params.amenities?.split(',').filter(Boolean),
     };
 
-    const properties = await getProperties(filters);
-    const areas = await getUniqueAreas();
-    const amenitiesVocab = await getAmenitiesVocabulary();
+    const [properties, areas, amenitiesVocab] = await Promise.all([
+        getProperties(filters),
+        getUniqueAreas(),
+        getAmenitiesVocabulary(),
+    ]);
 
     return (
         <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
