@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Property } from '@prisma/client';
 import { generateSlug, stringifyAmenities, parseAmenities, parseFacilities, stringifyFacilities, parseLocationAdvantages, stringifyLocationAdvantages, LocationAdvantage } from '@/lib/utils';
+import { uploadFileToStorage } from '@/lib/supabase-client';
 
 interface PropertyFormProps {
     property?: Property;
@@ -126,68 +127,25 @@ export default function PropertyForm({ property, mode }: PropertyFormProps) {
         try {
             let imageUrls = imagePreviews.filter(url => url.startsWith('/properties/') || url.startsWith('https://'));
 
-            // Upload new images if any
+            // Upload new images directly to Supabase Storage (bypasses Vercel 4.5MB limit)
             if (imageFiles.length > 0) {
                 setUploading(true);
-                const uploadFormData = new FormData();
-                imageFiles.forEach(file => {
-                    uploadFormData.append('images', file);
-                });
-                uploadFormData.append('slug', formData.slug);
-
-                const uploadRes = await fetch('/api/admin/upload', {
-                    method: 'POST',
-                    body: uploadFormData,
-                });
-
-                if (!uploadRes.ok) {
-                    const responseText = await uploadRes.text();
-                    let errorMsg = `Upload failed (HTTP ${uploadRes.status}): `;
-                    try {
-                        const errJson = JSON.parse(responseText);
-                        errorMsg += errJson.details || errJson.error || responseText;
-                    } catch {
-                        errorMsg += responseText.substring(0, 200);
-                    }
-                    throw new Error(errorMsg);
+                for (let i = 0; i < imageFiles.length; i++) {
+                    const url = await uploadFileToStorage(imageFiles[i], 'properties', formData.slug, i + 1);
+                    imageUrls.push(url);
                 }
-
-                const uploadJson = await uploadRes.json();
-                imageUrls = [...imageUrls, ...uploadJson.urls];
                 setUploading(false);
             }
 
-            // Upload floor plans if any
+            // Upload floor plans directly to Supabase Storage
             let floorPlanUrls = floorPlanPreviews.filter(fp => fp.url.startsWith('/floorplans/') || fp.url.startsWith('https://')).map(fp => fp.url);
 
             if (floorPlanFiles.length > 0) {
                 setUploading(true);
-                const fpFormData = new FormData();
-                floorPlanFiles.forEach(file => {
-                    fpFormData.append('images', file);
-                });
-                fpFormData.append('slug', formData.slug);
-                fpFormData.append('folder', 'floorplans');
-
-                const fpUploadRes = await fetch('/api/admin/upload', {
-                    method: 'POST',
-                    body: fpFormData,
-                });
-
-                if (!fpUploadRes.ok) {
-                    const responseText = await fpUploadRes.text();
-                    let errorMsg = `Floor plan upload failed (HTTP ${fpUploadRes.status}): `;
-                    try {
-                        const errJson = JSON.parse(responseText);
-                        errorMsg += errJson.details || errJson.error || responseText;
-                    } catch {
-                        errorMsg += responseText.substring(0, 200);
-                    }
-                    throw new Error(errorMsg);
+                for (let i = 0; i < floorPlanFiles.length; i++) {
+                    const url = await uploadFileToStorage(floorPlanFiles[i], 'floorplans', formData.slug, i + 1);
+                    floorPlanUrls.push(url);
                 }
-
-                const fpJson = await fpUploadRes.json();
-                floorPlanUrls = [...floorPlanUrls, ...fpJson.urls];
                 setUploading(false);
             }
 
