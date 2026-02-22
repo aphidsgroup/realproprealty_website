@@ -196,13 +196,17 @@ export default function PropertyForm({ property, mode }: PropertyFormProps) {
                 body: JSON.stringify(payload),
             });
 
-            if (!res.ok) throw new Error('Failed to save property');
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.details || errorData.error || 'Failed to save property');
+            }
 
             router.push('/admin/properties');
             router.refresh();
         } catch (error) {
             console.error('Error saving property:', error);
-            alert('Failed to save property');
+            const msg = error instanceof Error ? error.message : 'Failed to save property';
+            alert(msg);
             setLoading(false);
             setUploading(false);
         }

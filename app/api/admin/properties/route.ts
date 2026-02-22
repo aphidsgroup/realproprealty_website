@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db';
 import { isAuthenticated } from '@/lib/auth';
 import { generateSlug } from '@/lib/utils';
 
+export const runtime = 'nodejs';
+
 export async function GET(request: Request) {
     if (!(await isAuthenticated())) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -15,8 +17,8 @@ export async function GET(request: Request) {
         const where: any = {};
         if (search) {
             where.OR = [
-                { title: { contains: search } },
-                { areaName: { contains: search } },
+                { title: { contains: search, mode: 'insensitive' } },
+                { areaName: { contains: search, mode: 'insensitive' } },
             ];
         }
 
@@ -28,8 +30,36 @@ export async function GET(request: Request) {
         return NextResponse.json(properties);
     } catch (error) {
         console.error('Error fetching properties:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        const msg = error instanceof Error ? error.message : String(error);
+        return NextResponse.json({ error: 'Internal server error', details: msg }, { status: 500 });
     }
+}
+
+/**
+ * Sanitize incoming body to only include fields that exist in the Property schema.
+ */
+function sanitizePropertyData(body: any) {
+    return {
+        title: body.title || '',
+        usageType: body.usageType || 'residential',
+        propertySubtype: body.propertySubtype || null,
+        areaName: body.areaName || '',
+        city: body.city || 'Chennai',
+        priceInr: typeof body.priceInr === 'number' ? body.priceInr : parseInt(body.priceInr) || 0,
+        sizeSqft: typeof body.sizeSqft === 'number' ? body.sizeSqft : parseInt(body.sizeSqft) || 0,
+        bedrooms: body.bedrooms ? (typeof body.bedrooms === 'number' ? body.bedrooms : parseInt(body.bedrooms)) : null,
+        bathrooms: body.bathrooms ? (typeof body.bathrooms === 'number' ? body.bathrooms : parseInt(body.bathrooms)) : null,
+        parking: body.parking || null,
+        amenities: typeof body.amenities === 'string' ? body.amenities : JSON.stringify(body.amenities || []),
+        facilities: typeof body.facilities === 'string' ? body.facilities : JSON.stringify(body.facilities || []),
+        locationAdvantages: typeof body.locationAdvantages === 'string' ? body.locationAdvantages : JSON.stringify(body.locationAdvantages || []),
+        constructionStatus: body.constructionStatus || null,
+        tourEmbedUrl: body.tourEmbedUrl || '',
+        images: typeof body.images === 'string' ? body.images : JSON.stringify(body.images || []),
+        floorPlans: typeof body.floorPlans === 'string' ? body.floorPlans : JSON.stringify(body.floorPlans || []),
+        isPublished: Boolean(body.isPublished),
+        isFeatured: Boolean(body.isFeatured),
+    };
 }
 
 export async function POST(request: Request) {
@@ -39,9 +69,10 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
+        const data = sanitizePropertyData(body);
 
-        // Generate slug if not provided
-        let slug = body.slug || generateSlug(body.title);
+        // Generate slug from title
+        let slug = body.slug || generateSlug(data.title);
 
         // Ensure slug is unique
         let counter = 1;
@@ -53,7 +84,7 @@ export async function POST(request: Request) {
 
         const property = await prisma.property.create({
             data: {
-                ...body,
+                ...data,
                 slug: uniqueSlug,
             },
         });
@@ -61,6 +92,7 @@ export async function POST(request: Request) {
         return NextResponse.json(property, { status: 201 });
     } catch (error) {
         console.error('Error creating property:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        const msg = error instanceof Error ? error.message : String(error);
+        return NextResponse.json({ error: 'Failed to create property', details: msg }, { status: 500 });
     }
 }
