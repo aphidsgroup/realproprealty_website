@@ -9,16 +9,14 @@ interface FilterSheetProps {
     amenitiesVocab: string[];
 }
 
-// Budget presets for SALE properties (Chennai market rates)
-const BUDGET_OPTIONS = [
-    { label: 'Under ₹30 Lakhs', min: 0, max: 3000000 },
-    { label: '₹30L - ₹50L', min: 3000000, max: 5000000 },
-    { label: '₹50L - ₹75L', min: 5000000, max: 7500000 },
-    { label: '₹75L - ₹1 Cr', min: 7500000, max: 10000000 },
-    { label: '₹1 Cr - ₹1.5 Cr', min: 10000000, max: 15000000 },
-    { label: '₹1.5 Cr - ₹2.5 Cr', min: 15000000, max: 25000000 },
-    { label: '₹2.5 Cr - ₹5 Cr', min: 25000000, max: 50000000 },
-    { label: '₹5 Cr+', min: 50000000, max: 0 },
+// Quick budget presets (chips) for SALE properties
+const BUDGET_PRESETS = [
+    { label: 'Under ₹30L', min: '', max: '3000000' },
+    { label: '₹30L - ₹50L', min: '3000000', max: '5000000' },
+    { label: '₹50L - ₹75L', min: '5000000', max: '7500000' },
+    { label: '₹75L - ₹1 Cr', min: '7500000', max: '10000000' },
+    { label: '₹1 Cr - ₹2 Cr', min: '10000000', max: '20000000' },
+    { label: '₹2 Cr+', min: '20000000', max: '' },
 ];
 
 const SIZE_OPTIONS = [
@@ -31,6 +29,29 @@ const SIZE_OPTIONS = [
 
 const BHK_OPTIONS = ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'];
 
+// Property types for SALE (based on 99acres, NoBroker, MagicBricks analysis)
+const PROPERTY_TYPES = [
+    'Apartment',
+    'Villa / House',
+    'Independent Floor',
+    'Plot / Land',
+    'Office Space',
+    'Shop / Showroom',
+    'Warehouse / Godown',
+    'Farmhouse',
+];
+
+// Helper to format number to display (Lakhs / Cr)
+function formatBudgetDisplay(val: string): string {
+    if (!val) return '';
+    const num = parseInt(val);
+    if (isNaN(num)) return val;
+    if (num >= 10000000) return `₹${(num / 10000000).toFixed(num % 10000000 === 0 ? 0 : 1)} Cr`;
+    if (num >= 100000) return `₹${(num / 100000).toFixed(num % 100000 === 0 ? 0 : 1)} L`;
+    if (num >= 1000) return `₹${(num / 1000).toFixed(0)}K`;
+    return `₹${num}`;
+}
+
 export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -41,11 +62,8 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
     const [selectedAreas, setSelectedAreas] = useState<string[]>(
         searchParams.get('area')?.split(',').filter(Boolean) || []
     );
-    const [budgetRange, setBudgetRange] = useState(
-        searchParams.get('minPrice') && searchParams.get('maxPrice')
-            ? `${searchParams.get('minPrice')}-${searchParams.get('maxPrice')}`
-            : ''
-    );
+    const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
+    const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
     const [sizeRange, setSizeRange] = useState(
         searchParams.get('minSize') && searchParams.get('maxSize')
             ? `${searchParams.get('minSize')}-${searchParams.get('maxSize')}`
@@ -53,6 +71,9 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
     );
     const [selectedBHK, setSelectedBHK] = useState(
         searchParams.get('bhk') || ''
+    );
+    const [selectedType, setSelectedType] = useState(
+        searchParams.get('subtype') || ''
     );
 
     // Merge DB areas with all Chennai areas for selection
@@ -75,6 +96,21 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
         });
     };
 
+    const selectBudgetPreset = (preset: { min: string; max: string }) => {
+        // If already selected, deselect
+        if (minPrice === preset.min && maxPrice === preset.max) {
+            setMinPrice('');
+            setMaxPrice('');
+        } else {
+            setMinPrice(preset.min);
+            setMaxPrice(preset.max);
+        }
+    };
+
+    const isPresetSelected = (preset: { min: string; max: string }) => {
+        return minPrice === preset.min && maxPrice === preset.max;
+    };
+
     const handleApply = () => {
         const params = new URLSearchParams();
 
@@ -85,12 +121,9 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
         // Areas (comma separated)
         if (selectedAreas.length > 0) params.set('area', selectedAreas.join(','));
 
-        // Budget
-        if (budgetRange) {
-            const [min, max] = budgetRange.split('-');
-            if (min && min !== '0') params.set('minPrice', min);
-            if (max && max !== '0') params.set('maxPrice', max);
-        }
+        // Budget (range inputs)
+        if (minPrice) params.set('minPrice', minPrice);
+        if (maxPrice) params.set('maxPrice', maxPrice);
 
         // Size
         if (sizeRange) {
@@ -102,6 +135,9 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
         // BHK
         if (selectedBHK) params.set('bhk', selectedBHK);
 
+        // Property Type
+        if (selectedType) params.set('subtype', selectedType);
+
         router.push(`/list?${params.toString()}`);
         setIsOpen(false);
     };
@@ -112,9 +148,11 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
         if (use) newParams.set('use', use);
 
         setSelectedAreas([]);
-        setBudgetRange('');
+        setMinPrice('');
+        setMaxPrice('');
         setSizeRange('');
         setSelectedBHK('');
+        setSelectedType('');
         setAreaSearch('');
 
         router.push(`/list?${newParams.toString()}`);
@@ -123,9 +161,10 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
 
     const activeFiltersCount = [
         selectedAreas.length > 0 ? '1' : '',
-        budgetRange,
+        minPrice || maxPrice ? '1' : '',
         sizeRange,
         selectedBHK,
+        selectedType,
     ].filter(Boolean).length;
 
     return (
@@ -171,6 +210,27 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
                         </div>
 
                         <div className="p-6 space-y-6">
+                            {/* === PROPERTY TYPE (Chips) === */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                                    Property Type
+                                </label>
+                                <div className="flex flex-wrap gap-2">
+                                    {PROPERTY_TYPES.map(type => (
+                                        <button
+                                            key={type}
+                                            onClick={() => setSelectedType(selectedType === type ? '' : type)}
+                                            className={`px-3.5 py-2 rounded-full text-xs font-medium transition-all duration-200 ${selectedType === type
+                                                ? 'bg-primary-500 text-white shadow-sm'
+                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                                }`}
+                                        >
+                                            {type}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
                             {/* === AREAS (Multi-select, up to 5) === */}
                             <div>
                                 <div className="flex items-center justify-between mb-2">
@@ -257,38 +317,65 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
                                 </div>
                             </div>
 
-                            {/* === BUDGET (Dropdown) === */}
+                            {/* === BUDGET (Range Filter) === */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
                                     Budget
                                 </label>
-                                <select
-                                    value={budgetRange}
-                                    onChange={(e) => setBudgetRange(e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none cursor-pointer"
-                                >
-                                    <option value="">All Budgets</option>
-                                    {BUDGET_OPTIONS.map(opt => (
-                                        <option key={opt.label} value={`${opt.min}-${opt.max}`}>{opt.label}</option>
-                                    ))}
-                                </select>
-                            </div>
 
-                            {/* === SIZE (Dropdown) === */}
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                                    Property Size
-                                </label>
-                                <select
-                                    value={sizeRange}
-                                    onChange={(e) => setSizeRange(e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none cursor-pointer"
-                                >
-                                    <option value="">All Sizes</option>
-                                    {SIZE_OPTIONS.map(opt => (
-                                        <option key={opt.label} value={`${opt.min}-${opt.max}`}>{opt.label}</option>
+                                {/* Quick preset chips */}
+                                <div className="flex flex-wrap gap-2 mb-3">
+                                    {BUDGET_PRESETS.map(preset => (
+                                        <button
+                                            key={preset.label}
+                                            onClick={() => selectBudgetPreset(preset)}
+                                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${isPresetSelected(preset)
+                                                ? 'bg-primary-500 text-white shadow-sm'
+                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                                }`}
+                                        >
+                                            {preset.label}
+                                        </button>
                                     ))}
-                                </select>
+                                </div>
+
+                                {/* Min - Max inputs */}
+                                <div className="flex items-center gap-3">
+                                    <div className="flex-1 relative">
+                                        <input
+                                            type="number"
+                                            value={minPrice}
+                                            onChange={(e) => setMinPrice(e.target.value)}
+                                            placeholder="Min"
+                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                        />
+                                        {minPrice && (
+                                            <span className="absolute -top-2 left-3 bg-white dark:bg-gray-700 px-1 text-[10px] text-primary-500 font-semibold">
+                                                {formatBudgetDisplay(minPrice)}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <span className="text-gray-400 font-medium text-sm">to</span>
+                                    <div className="flex-1 relative">
+                                        <input
+                                            type="number"
+                                            value={maxPrice}
+                                            onChange={(e) => setMaxPrice(e.target.value)}
+                                            placeholder="Max"
+                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                        />
+                                        {maxPrice && (
+                                            <span className="absolute -top-2 left-3 bg-white dark:bg-gray-700 px-1 text-[10px] text-primary-500 font-semibold">
+                                                {formatBudgetDisplay(maxPrice)}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                {(minPrice || maxPrice) && (
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
+                                        {minPrice ? formatBudgetDisplay(minPrice) : '₹0'} — {maxPrice ? formatBudgetDisplay(maxPrice) : 'No limit'}
+                                    </p>
+                                )}
                             </div>
 
                             {/* === BHK (Chips) === */}
@@ -310,6 +397,23 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
                                         </button>
                                     ))}
                                 </div>
+                            </div>
+
+                            {/* === SIZE (Dropdown) === */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                                    Property Size
+                                </label>
+                                <select
+                                    value={sizeRange}
+                                    onChange={(e) => setSizeRange(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none cursor-pointer"
+                                >
+                                    <option value="">All Sizes</option>
+                                    {SIZE_OPTIONS.map(opt => (
+                                        <option key={opt.label} value={`${opt.min}-${opt.max}`}>{opt.label}</option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
 
