@@ -141,12 +141,19 @@ export default function PropertyForm({ property, mode }: PropertyFormProps) {
                 });
 
                 if (!uploadRes.ok) {
-                    const errData = await uploadRes.json().catch(() => ({}));
-                    throw new Error(errData.details || errData.error || 'Failed to upload images');
+                    const responseText = await uploadRes.text();
+                    let errorMsg = `Upload failed (HTTP ${uploadRes.status}): `;
+                    try {
+                        const errJson = JSON.parse(responseText);
+                        errorMsg += errJson.details || errJson.error || responseText;
+                    } catch {
+                        errorMsg += responseText.substring(0, 200);
+                    }
+                    throw new Error(errorMsg);
                 }
 
-                const { urls } = await uploadRes.json();
-                imageUrls = [...imageUrls, ...urls];
+                const uploadJson = await uploadRes.json();
+                imageUrls = [...imageUrls, ...uploadJson.urls];
                 setUploading(false);
             }
 
@@ -168,12 +175,19 @@ export default function PropertyForm({ property, mode }: PropertyFormProps) {
                 });
 
                 if (!fpUploadRes.ok) {
-                    const errData = await fpUploadRes.json().catch(() => ({}));
-                    throw new Error(errData.details || errData.error || 'Failed to upload floor plans');
+                    const responseText = await fpUploadRes.text();
+                    let errorMsg = `Floor plan upload failed (HTTP ${fpUploadRes.status}): `;
+                    try {
+                        const errJson = JSON.parse(responseText);
+                        errorMsg += errJson.details || errJson.error || responseText;
+                    } catch {
+                        errorMsg += responseText.substring(0, 200);
+                    }
+                    throw new Error(errorMsg);
                 }
 
-                const { urls } = await fpUploadRes.json();
-                floorPlanUrls = [...floorPlanUrls, ...urls];
+                const fpJson = await fpUploadRes.json();
+                floorPlanUrls = [...floorPlanUrls, ...fpJson.urls];
                 setUploading(false);
             }
 
