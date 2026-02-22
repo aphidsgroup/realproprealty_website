@@ -17,6 +17,14 @@ const nextConfig = {
             },
         ],
     },
+    experimental: {
+        // Cache visited pages in the client-side router for 5 minutes
+        // Back/forward navigation will be instant without refetching
+        staleTimes: {
+            dynamic: 300,  // 5 minutes for dynamic pages
+            static: 600,   // 10 minutes for static pages
+        },
+    },
 };
 
 module.exports = withPWA(nextConfig);
