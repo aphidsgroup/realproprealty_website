@@ -13,6 +13,7 @@ interface ListPageProps {
     searchParams: Promise<{
         use?: UsageType;
         area?: string;
+        subtype?: string;
         minPrice?: string;
         maxPrice?: string;
         minSize?: string;
@@ -25,6 +26,7 @@ interface ListPageProps {
 async function getProperties(filters: {
     use?: UsageType;
     area?: string;     // comma-separated areas
+    subtype?: string;  // property subtype (apartment, villa, office, etc.)
     minPrice?: number;
     maxPrice?: number;
     minSize?: number;
@@ -38,6 +40,7 @@ async function getProperties(filters: {
         };
 
         if (filters.use) where.usageType = filters.use;
+        if (filters.subtype) where.propertySubtype = { contains: filters.subtype, mode: 'insensitive' };
 
         // Multi-area: comma-separated values use "in" query
         if (filters.area) {
@@ -114,6 +117,7 @@ export default async function ListPage({ searchParams }: ListPageProps) {
     const filters = {
         use: params.use,
         area: params.area,
+        subtype: params.subtype,
         minPrice: params.minPrice ? parseInt(params.minPrice) : undefined,
         maxPrice: params.maxPrice ? parseInt(params.maxPrice) : undefined,
         minSize: params.minSize ? parseInt(params.minSize) : undefined,

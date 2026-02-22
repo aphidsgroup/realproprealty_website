@@ -9,13 +9,16 @@ interface FilterSheetProps {
     amenitiesVocab: string[];
 }
 
-// Budget presets for quick selection
+// Budget presets for SALE properties (Chennai market rates)
 const BUDGET_OPTIONS = [
-    { label: 'Under ₹20K', min: 0, max: 20000 },
-    { label: '₹20K - ₹50K', min: 20000, max: 50000 },
-    { label: '₹50K - ₹1L', min: 50000, max: 100000 },
-    { label: '₹1L - ₹2L', min: 100000, max: 200000 },
-    { label: '₹2L+', min: 200000, max: 0 },
+    { label: 'Under ₹30 Lakhs', min: 0, max: 3000000 },
+    { label: '₹30L - ₹50L', min: 3000000, max: 5000000 },
+    { label: '₹50L - ₹75L', min: 5000000, max: 7500000 },
+    { label: '₹75L - ₹1 Cr', min: 7500000, max: 10000000 },
+    { label: '₹1 Cr - ₹1.5 Cr', min: 10000000, max: 15000000 },
+    { label: '₹1.5 Cr - ₹2.5 Cr', min: 15000000, max: 25000000 },
+    { label: '₹2.5 Cr - ₹5 Cr', min: 25000000, max: 50000000 },
+    { label: '₹5 Cr+', min: 50000000, max: 0 },
 ];
 
 const SIZE_OPTIONS = [
@@ -223,10 +226,10 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
                                             onClick={() => toggleArea(area)}
                                             disabled={!selectedAreas.includes(area) && selectedAreas.length >= 5}
                                             className={`w-full text-left px-4 py-2.5 text-sm border-b border-gray-100 dark:border-gray-700 last:border-0 flex items-center justify-between transition-colors ${selectedAreas.includes(area)
-                                                    ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                                                    : selectedAreas.length >= 5
-                                                        ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
-                                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                                ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                                                : selectedAreas.length >= 5
+                                                    ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                                                 }`}
                                         >
                                             <span className="flex items-center gap-2">

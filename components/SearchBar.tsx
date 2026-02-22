@@ -14,7 +14,7 @@ export default function SearchBar({ areas }: SearchBarProps) {
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
-    // Merge DB areas (shown first as "Available") with all Chennai areas
+    // Merge DB areas with all Chennai areas
     const allAreas = [...new Set([...areas, ...CHENNAI_AREAS])].sort();
 
     // Filter based on query
@@ -49,46 +49,49 @@ export default function SearchBar({ areas }: SearchBarProps) {
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            handleSearch();
-        }
-        if (e.key === 'Escape') {
-            setIsOpen(false);
-        }
+        if (e.key === 'Enter') handleSearch();
+        if (e.key === 'Escape') setIsOpen(false);
     };
 
     return (
         <div ref={wrapperRef} className="relative">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center overflow-hidden">
-                <div className="flex-1 flex items-center gap-3 px-4">
-                    <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700 flex items-center h-14">
+                {/* Search icon on left */}
+                <div className="pl-4 pr-2 flex items-center">
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    <input
-                        type="text"
-                        value={query}
-                        onChange={(e) => {
-                            setQuery(e.target.value);
-                            setIsOpen(true);
-                        }}
-                        onFocus={() => setIsOpen(true)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Search by area..."
-                        className="flex-1 py-3.5 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none text-base"
-                    />
                 </div>
+
+                {/* Input */}
+                <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => {
+                        setQuery(e.target.value);
+                        setIsOpen(true);
+                    }}
+                    onFocus={() => setIsOpen(true)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Search by area..."
+                    className="flex-1 h-full bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none text-sm"
+                />
+
+                {/* Search icon button on right */}
                 <button
                     onClick={() => handleSearch()}
-                    className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-3.5 px-6 transition-all duration-300 text-sm"
+                    className="h-10 w-10 mr-2 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white flex items-center justify-center transition-all duration-300 flex-shrink-0"
+                    aria-label="Search"
                 >
-                    Search
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
                 </button>
             </div>
 
             {/* Area Suggestions Dropdown */}
             {isOpen && filteredAreas.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-72 overflow-y-auto">
-                    {/* Available areas (have properties) */}
                     {availableAreas.length > 0 && (
                         <div className="p-2">
                             <p className="px-3 py-1.5 text-[10px] font-bold text-primary-500 uppercase tracking-wider">
@@ -110,7 +113,6 @@ export default function SearchBar({ areas }: SearchBarProps) {
                         </div>
                     )}
 
-                    {/* All Chennai areas */}
                     {otherAreas.length > 0 && (
                         <div className="p-2 border-t border-gray-100 dark:border-gray-700">
                             <p className="px-3 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
