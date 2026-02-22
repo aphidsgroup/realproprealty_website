@@ -80,7 +80,7 @@ export default async function HomePage() {
                             />
                         </div>
                     </div>
-                    <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
                         Your Trusted<br />Real Estate Partner
                     </h1>
                     <p className="text-lg text-gray-600 dark:text-gray-400">

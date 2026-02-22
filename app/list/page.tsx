@@ -18,17 +18,19 @@ interface ListPageProps {
         minSize?: string;
         maxSize?: string;
         amenities?: string;
+        bhk?: string;
     }>;
 }
 
 async function getProperties(filters: {
     use?: UsageType;
-    area?: string;
+    area?: string;     // comma-separated areas
     minPrice?: number;
     maxPrice?: number;
     minSize?: number;
     maxSize?: number;
     amenities?: string[];
+    bhk?: string;      // maps to bedrooms field
 }) {
     try {
         const where: any = {
@@ -36,11 +38,29 @@ async function getProperties(filters: {
         };
 
         if (filters.use) where.usageType = filters.use;
-        if (filters.area) where.areaName = filters.area;
+
+        // Multi-area: comma-separated values use "in" query
+        if (filters.area) {
+            const areaList = filters.area.split(',').map(a => a.trim()).filter(Boolean);
+            if (areaList.length === 1) {
+                where.areaName = areaList[0];
+            } else if (areaList.length > 1) {
+                where.areaName = { in: areaList };
+            }
+        }
+
         if (filters.minPrice) where.priceInr = { ...where.priceInr, gte: filters.minPrice };
         if (filters.maxPrice) where.priceInr = { ...where.priceInr, lte: filters.maxPrice };
         if (filters.minSize) where.sizeSqft = { ...where.sizeSqft, gte: filters.minSize };
         if (filters.maxSize) where.sizeSqft = { ...where.sizeSqft, lte: filters.maxSize };
+        if (filters.bhk) {
+            if (filters.bhk === '4+ BHK') {
+                where.bedrooms = { gte: 4 };
+            } else {
+                const beds = parseInt(filters.bhk);
+                if (!isNaN(beds)) where.bedrooms = beds;
+            }
+        }
 
         const properties = await prisma.property.findMany({
             where,
@@ -99,6 +119,7 @@ export default async function ListPage({ searchParams }: ListPageProps) {
         minSize: params.minSize ? parseInt(params.minSize) : undefined,
         maxSize: params.maxSize ? parseInt(params.maxSize) : undefined,
         amenities: params.amenities?.split(',').filter(Boolean),
+        bhk: params.bhk,
     };
 
     const [properties, areas, amenitiesVocab] = await Promise.all([

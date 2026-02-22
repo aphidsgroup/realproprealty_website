@@ -1,85 +1,129 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { CHENNAI_AREAS } from '@/lib/chennai-areas';
 
 interface FilterSheetProps {
-    areas: string[];
+    areas: string[];       // DB areas (have properties)
     amenitiesVocab: string[];
 }
+
+// Budget presets for quick selection
+const BUDGET_OPTIONS = [
+    { label: 'Under ₹20K', min: 0, max: 20000 },
+    { label: '₹20K - ₹50K', min: 20000, max: 50000 },
+    { label: '₹50K - ₹1L', min: 50000, max: 100000 },
+    { label: '₹1L - ₹2L', min: 100000, max: 200000 },
+    { label: '₹2L+', min: 200000, max: 0 },
+];
+
+const SIZE_OPTIONS = [
+    { label: 'Under 500 sq ft', min: 0, max: 500 },
+    { label: '500-1000 sq ft', min: 500, max: 1000 },
+    { label: '1000-1500 sq ft', min: 1000, max: 1500 },
+    { label: '1500-2500 sq ft', min: 1500, max: 2500 },
+    { label: '2500+ sq ft', min: 2500, max: 0 },
+];
+
+const BHK_OPTIONS = ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'];
 
 export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [isOpen, setIsOpen] = useState(false);
+    const [areaSearch, setAreaSearch] = useState('');
 
     // Get current filter values from URL
-    const [area, setArea] = useState(searchParams.get('area') || '');
-    const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
-    const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
-    const [minSize, setMinSize] = useState(searchParams.get('minSize') || '');
-    const [maxSize, setMaxSize] = useState(searchParams.get('maxSize') || '');
-    const [selectedAmenities, setSelectedAmenities] = useState<string[]>(
-        searchParams.get('amenities')?.split(',').filter(Boolean) || []
+    const [selectedAreas, setSelectedAreas] = useState<string[]>(
+        searchParams.get('area')?.split(',').filter(Boolean) || []
+    );
+    const [budgetRange, setBudgetRange] = useState(
+        searchParams.get('minPrice') && searchParams.get('maxPrice')
+            ? `${searchParams.get('minPrice')}-${searchParams.get('maxPrice')}`
+            : ''
+    );
+    const [sizeRange, setSizeRange] = useState(
+        searchParams.get('minSize') && searchParams.get('maxSize')
+            ? `${searchParams.get('minSize')}-${searchParams.get('maxSize')}`
+            : ''
+    );
+    const [selectedBHK, setSelectedBHK] = useState(
+        searchParams.get('bhk') || ''
     );
 
+    // Merge DB areas with all Chennai areas for selection
+    const allAreas = useMemo(() => {
+        return [...new Set([...areas, ...CHENNAI_AREAS])].sort();
+    }, [areas]);
+
+    const filteredAreaList = useMemo(() => {
+        if (!areaSearch.trim()) return allAreas;
+        return allAreas.filter(a => a.toLowerCase().includes(areaSearch.toLowerCase()));
+    }, [allAreas, areaSearch]);
+
+    const toggleArea = (area: string) => {
+        setSelectedAreas(prev => {
+            if (prev.includes(area)) {
+                return prev.filter(a => a !== area);
+            }
+            if (prev.length >= 5) return prev; // Max 5
+            return [...prev, area];
+        });
+    };
+
     const handleApply = () => {
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams();
 
-        // Preserve deal and use params
-        if (area) params.set('area', area);
-        else params.delete('area');
+        // Preserve usage type
+        const use = searchParams.get('use');
+        if (use) params.set('use', use);
 
-        if (minPrice) params.set('minPrice', minPrice);
-        else params.delete('minPrice');
+        // Areas (comma separated)
+        if (selectedAreas.length > 0) params.set('area', selectedAreas.join(','));
 
-        if (maxPrice) params.set('maxPrice', maxPrice);
-        else params.delete('maxPrice');
+        // Budget
+        if (budgetRange) {
+            const [min, max] = budgetRange.split('-');
+            if (min && min !== '0') params.set('minPrice', min);
+            if (max && max !== '0') params.set('maxPrice', max);
+        }
 
-        if (minSize) params.set('minSize', minSize);
-        else params.delete('minSize');
+        // Size
+        if (sizeRange) {
+            const [min, max] = sizeRange.split('-');
+            if (min && min !== '0') params.set('minSize', min);
+            if (max && max !== '0') params.set('maxSize', max);
+        }
 
-        if (maxSize) params.set('maxSize', maxSize);
-        else params.delete('maxSize');
-
-        if (selectedAmenities.length > 0) params.set('amenities', selectedAmenities.join(','));
-        else params.delete('amenities');
+        // BHK
+        if (selectedBHK) params.set('bhk', selectedBHK);
 
         router.push(`/list?${params.toString()}`);
         setIsOpen(false);
     };
 
     const handleClear = () => {
-        const params = new URLSearchParams(searchParams.toString());
-
-        // Keep only deal and use params
-        const deal = params.get('deal');
-        const use = params.get('use');
-
         const newParams = new URLSearchParams();
-        if (deal) newParams.set('deal', deal);
+        const use = searchParams.get('use');
         if (use) newParams.set('use', use);
 
-        setArea('');
-        setMinPrice('');
-        setMaxPrice('');
-        setMinSize('');
-        setMaxSize('');
-        setSelectedAmenities([]);
+        setSelectedAreas([]);
+        setBudgetRange('');
+        setSizeRange('');
+        setSelectedBHK('');
+        setAreaSearch('');
 
         router.push(`/list?${newParams.toString()}`);
         setIsOpen(false);
     };
 
-    const toggleAmenity = (amenity: string) => {
-        setSelectedAmenities(prev =>
-            prev.includes(amenity)
-                ? prev.filter(a => a !== amenity)
-                : [...prev, amenity]
-        );
-    };
-
-    const activeFiltersCount = [area, minPrice, maxPrice, minSize, maxSize, ...selectedAmenities].filter(Boolean).length;
+    const activeFiltersCount = [
+        selectedAreas.length > 0 ? '1' : '',
+        budgetRange,
+        sizeRange,
+        selectedBHK,
+    ].filter(Boolean).length;
 
     return (
         <>
@@ -110,7 +154,8 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
 
                     {/* Sheet */}
                     <div className="fixed inset-x-0 bottom-0 z-50 bg-white dark:bg-gray-800 rounded-t-3xl shadow-2xl max-h-[85vh] overflow-y-auto animate-slide-up">
-                        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+                        {/* Header */}
+                        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between z-10">
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Filters</h2>
                             <button
                                 onClick={() => setIsOpen(false)}
@@ -123,120 +168,144 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
                         </div>
 
                         <div className="p-6 space-y-6">
-                            {/* Area */}
+                            {/* === AREAS (Multi-select, up to 5) === */}
+                            <div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="text-sm font-semibold text-gray-900 dark:text-white">
+                                        Areas
+                                    </label>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        {selectedAreas.length}/5 selected
+                                    </span>
+                                </div>
+
+                                {/* Selected area chips */}
+                                {selectedAreas.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mb-3">
+                                        {selectedAreas.map(area => (
+                                            <span
+                                                key={area}
+                                                className="inline-flex items-center gap-1.5 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 px-3 py-1.5 rounded-full text-xs font-semibold"
+                                            >
+                                                {area}
+                                                <button
+                                                    onClick={() => toggleArea(area)}
+                                                    className="hover:bg-primary-200 dark:hover:bg-primary-800 rounded-full p-0.5"
+                                                >
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Area search input */}
+                                <div className="relative mb-2">
+                                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    <input
+                                        type="text"
+                                        value={areaSearch}
+                                        onChange={(e) => setAreaSearch(e.target.value)}
+                                        placeholder="Search areas..."
+                                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                    />
+                                </div>
+
+                                {/* Area list (scrollable) */}
+                                <div className="max-h-40 overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-700">
+                                    {filteredAreaList.map(area => (
+                                        <button
+                                            key={area}
+                                            onClick={() => toggleArea(area)}
+                                            disabled={!selectedAreas.includes(area) && selectedAreas.length >= 5}
+                                            className={`w-full text-left px-4 py-2.5 text-sm border-b border-gray-100 dark:border-gray-700 last:border-0 flex items-center justify-between transition-colors ${selectedAreas.includes(area)
+                                                    ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                                                    : selectedAreas.length >= 5
+                                                        ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                                }`}
+                                        >
+                                            <span className="flex items-center gap-2">
+                                                <svg className={`w-3.5 h-3.5 flex-shrink-0 ${areas.includes(area) ? 'text-primary-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                                {area}
+                                                {areas.includes(area) && (
+                                                    <span className="text-[10px] bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 px-1.5 py-0.5 rounded-full font-semibold">
+                                                        Available
+                                                    </span>
+                                                )}
+                                            </span>
+                                            {selectedAreas.includes(area) && (
+                                                <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            )}
+                                        </button>
+                                    ))}
+                                    {filteredAreaList.length === 0 && (
+                                        <p className="text-center text-sm text-gray-400 py-4">No areas found</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* === BUDGET (Dropdown) === */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                                    Area
+                                    Budget
                                 </label>
                                 <select
-                                    value={area}
-                                    onChange={(e) => setArea(e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                    value={budgetRange}
+                                    onChange={(e) => setBudgetRange(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none cursor-pointer"
                                 >
-                                    <option value="">All Areas</option>
-                                    {areas.map((a) => (
-                                        <option key={a} value={a}>{a}</option>
+                                    <option value="">All Budgets</option>
+                                    {BUDGET_OPTIONS.map(opt => (
+                                        <option key={opt.label} value={`${opt.min}-${opt.max}`}>{opt.label}</option>
                                     ))}
                                 </select>
                             </div>
 
-                            {/* Budget */}
+                            {/* === SIZE (Dropdown) === */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                                    Budget (₹/month)
+                                    Property Size
                                 </label>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <input
-                                        type="number"
-                                        placeholder="Min"
-                                        value={minPrice}
-                                        onChange={(e) => setMinPrice(e.target.value)}
-                                        className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                    />
-                                    <input
-                                        type="number"
-                                        placeholder="Max"
-                                        value={maxPrice}
-                                        onChange={(e) => setMaxPrice(e.target.value)}
-                                        className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                    />
-                                </div>
+                                <select
+                                    value={sizeRange}
+                                    onChange={(e) => setSizeRange(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none cursor-pointer"
+                                >
+                                    <option value="">All Sizes</option>
+                                    {SIZE_OPTIONS.map(opt => (
+                                        <option key={opt.label} value={`${opt.min}-${opt.max}`}>{opt.label}</option>
+                                    ))}
+                                </select>
                             </div>
 
-                            {/* Size */}
+                            {/* === BHK (Chips) === */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                                    Size (sq ft)
-                                </label>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <input
-                                        type="number"
-                                        placeholder="Min"
-                                        value={minSize}
-                                        onChange={(e) => setMinSize(e.target.value)}
-                                        className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                    />
-                                    <input
-                                        type="number"
-                                        placeholder="Max"
-                                        value={maxSize}
-                                        onChange={(e) => setMaxSize(e.target.value)}
-                                        className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Amenities */}
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                                    Amenities
+                                    BHK Type
                                 </label>
                                 <div className="flex flex-wrap gap-2">
-                                    {amenitiesVocab
-                                        .filter((amenity) => {
-                                            const usageType = searchParams.get('use') || 'residential';
-
-                                            // Residential-only amenities
-                                            const residentialAmenities = [
-                                                'Swimming Pool', 'Play Area', 'Garden', 'Club House',
-                                                'Children\'s Park', 'Jogging Track', 'Indoor Games',
-                                                'Community Hall', 'Meditation Area', 'Senior Citizen Area'
-                                            ];
-
-                                            // Commercial-only amenities
-                                            const commercialAmenities = [
-                                                'Conference Room', 'Reception Area', 'Cafeteria',
-                                                'Server Room', 'Meeting Rooms', 'Pantry',
-                                                'Workstations', 'Cabin Space', 'Washrooms per Floor',
-                                                'Visitor Parking', 'Loading Bay', 'Storage Area'
-                                            ];
-
-                                            // Common amenities for both
-                                            const commonAmenities = [
-                                                'Lift', 'Parking', 'Security', 'Power Backup',
-                                                'Water Supply', 'CCTV', 'Intercom', '24/7 Security',
-                                                'Fire Safety', 'Maintenance Staff', 'Covered Parking',
-                                                'Visitor Parking', 'Rainwater Harvesting', 'Waste Management'
-                                            ];
-
-                                            if (usageType === 'residential') {
-                                                return !commercialAmenities.includes(amenity);
-                                            } else {
-                                                return !residentialAmenities.includes(amenity);
-                                            }
-                                        })
-                                        .map((amenity) => (
-                                            <button
-                                                key={amenity}
-                                                onClick={() => toggleAmenity(amenity)}
-                                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${selectedAmenities.includes(amenity)
-                                                    ? 'bg-primary-500 text-white'
-                                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                                    }`}
-                                            >
-                                                {amenity}
-                                            </button>
-                                        ))}
+                                    {BHK_OPTIONS.map(bhk => (
+                                        <button
+                                            key={bhk}
+                                            onClick={() => setSelectedBHK(selectedBHK === bhk ? '' : bhk)}
+                                            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${selectedBHK === bhk
+                                                ? 'bg-primary-500 text-white shadow-sm'
+                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                                }`}
+                                        >
+                                            {bhk}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -247,13 +316,13 @@ export default function FilterSheet({ areas, amenitiesVocab }: FilterSheetProps)
                                 onClick={handleClear}
                                 className="flex-1 px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                             >
-                                Clear
+                                Clear All
                             </button>
                             <button
                                 onClick={handleApply}
-                                className="flex-1 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl transition-all duration-300"
+                                className="flex-1 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-xl shadow-md transition-all duration-300"
                             >
-                                Apply
+                                Show Results
                             </button>
                         </div>
                     </div>
