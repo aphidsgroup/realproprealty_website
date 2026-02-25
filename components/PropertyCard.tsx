@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Property } from '@prisma/client';
 import { formatPrice, formatSize, parseAmenities } from '@/lib/utils';
+import ShortlistButton from './ShortlistButton';
 
 interface PropertyCardProps {
     property: Property;
@@ -15,7 +16,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
     return (
         <Link
             href={`/p/${property.slug}`}
-            className="block bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
+            className="block bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group relative"
         >
             {/* Cover Image */}
             {coverImage && (
@@ -27,6 +28,18 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
+                    {/* Shortlist Button */}
+                    <div className="absolute top-3 right-3 z-10">
+                        <ShortlistButton propertyId={property.id} size="sm" />
+                    </div>
+                    {/* Negotiable Badge */}
+                    {property.isNegotiable && (
+                        <div className="absolute top-3 left-3 z-10">
+                            <span className="px-2.5 py-1 bg-green-500 text-white text-xs font-bold rounded-full shadow-md">
+                                Negotiable
+                            </span>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -51,6 +64,11 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                     <span className="font-bold text-primary-600 dark:text-primary-400 text-xl">
                         {formatPrice(property.priceInr)}
                     </span>
+                    {property.isNegotiable && !coverImage && (
+                        <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-full">
+                            Negotiable
+                        </span>
+                    )}
                     <span>•</span>
                     <span className="font-medium">{formatSize(property.sizeSqft)}</span>
                     {property.bedrooms !== null && property.bedrooms > 0 && (

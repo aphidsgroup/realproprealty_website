@@ -2,9 +2,13 @@ import bcrypt from 'bcryptjs';
 import { getIronSession, IronSession, SessionOptions } from 'iron-session';
 import { cookies } from 'next/headers';
 
+export type UserRole = 'admin' | 'manager' | 'user';
+
 export interface SessionData {
     userId: string;
     email: string;
+    name?: string;
+    role: UserRole;
     isLoggedIn: boolean;
 }
 
@@ -34,4 +38,30 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 export async function isAuthenticated(): Promise<boolean> {
     const session = await getSession();
     return session.isLoggedIn === true;
+}
+
+export async function isAdmin(): Promise<boolean> {
+    const session = await getSession();
+    return session.isLoggedIn === true && session.role === 'admin';
+}
+
+export async function isManager(): Promise<boolean> {
+    const session = await getSession();
+    return session.isLoggedIn === true && session.role === 'manager';
+}
+
+export async function isUser(): Promise<boolean> {
+    const session = await getSession();
+    return session.isLoggedIn === true && session.role === 'user';
+}
+
+export async function isAdminOrManager(): Promise<boolean> {
+    const session = await getSession();
+    return session.isLoggedIn === true && (session.role === 'admin' || session.role === 'manager');
+}
+
+export async function getSessionRole(): Promise<UserRole | null> {
+    const session = await getSession();
+    if (!session.isLoggedIn) return null;
+    return session.role;
 }

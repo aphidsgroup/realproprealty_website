@@ -4,8 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-export default function LoginPage() {
+type LoginMode = 'admin' | 'manager';
+
+export default function AdminLoginPage() {
     const router = useRouter();
+    const [mode, setMode] = useState<LoginMode>('admin');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -17,7 +20,8 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const res = await fetch('/api/auth/login', {
+            const endpoint = mode === 'admin' ? '/api/auth/login' : '/api/auth/manager-login';
+            const res = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
@@ -31,9 +35,9 @@ export default function LoginPage() {
                 return;
             }
 
-            router.push('/admin');
+            router.push(mode === 'admin' ? '/admin' : '/manager');
             router.refresh();
-        } catch (err) {
+        } catch {
             setError('An error occurred. Please try again.');
             setLoading(false);
         }
@@ -54,7 +58,7 @@ export default function LoginPage() {
                         />
                     </div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                        Admin Login
+                        {mode === 'admin' ? 'Admin Login' : 'Manager Login'}
                     </h1>
                     <p className="text-gray-600 dark:text-gray-400">
                         Realprop Realty CMS
@@ -62,6 +66,30 @@ export default function LoginPage() {
                 </div>
 
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+                    {/* Mode Toggle */}
+                    <div className="flex rounded-xl bg-gray-100 dark:bg-gray-700 p-1 mb-6">
+                        <button
+                            type="button"
+                            onClick={() => { setMode('admin'); setError(''); }}
+                            className={`flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 ${mode === 'admin'
+                                ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
+                                }`}
+                        >
+                            Admin
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setMode('manager'); setError(''); }}
+                            className={`flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 ${mode === 'manager'
+                                ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
+                                }`}
+                        >
+                            Manager
+                        </button>
+                    </div>
+
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {error && (
                             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-xl">
@@ -80,7 +108,7 @@ export default function LoginPage() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                placeholder="admin@realproprealty.com"
+                                placeholder={mode === 'admin' ? 'admin@realproprealty.com' : 'manager@realproprealty.com'}
                             />
                         </div>
 
@@ -104,14 +132,9 @@ export default function LoginPage() {
                             disabled={loading}
                             className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:cursor-not-allowed"
                         >
-                            {loading ? 'Logging in...' : 'Login'}
+                            {loading ? 'Logging in...' : `Login as ${mode === 'admin' ? 'Admin' : 'Manager'}`}
                         </button>
                     </form>
-
-                    <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-                        <p>Default credentials:</p>
-                        <p className="font-mono text-xs mt-1">admin@realproprealty.com</p>
-                    </div>
                 </div>
             </div>
         </div>

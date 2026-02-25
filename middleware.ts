@@ -4,20 +4,40 @@ import type { NextRequest } from 'next/server';
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // Allow login page and API routes
-    if (pathname === '/admin/login' || pathname.startsWith('/api/')) {
+    // Allow public pages and API routes
+    if (
+        pathname === '/admin/login' ||
+        pathname === '/login' ||
+        pathname === '/signup' ||
+        pathname.startsWith('/api/')
+    ) {
         return NextResponse.next();
     }
 
-    // Protect all /admin routes - check for session cookie
-    if (pathname.startsWith('/admin')) {
-        const sessionCookie = request.cookies.get('realprop_session');
+    // Check for session cookie
+    const sessionCookie = request.cookies.get('realprop_session');
 
+    // Protect /admin routes — require session cookie (role check done server-side)
+    if (pathname.startsWith('/admin')) {
         if (!sessionCookie?.value) {
             return NextResponse.redirect(new URL('/admin/login', request.url));
         }
+        return NextResponse.next();
+    }
 
-        // Cookie exists - let the page handle full session validation
+    // Protect /manager routes
+    if (pathname.startsWith('/manager')) {
+        if (!sessionCookie?.value) {
+            return NextResponse.redirect(new URL('/admin/login', request.url));
+        }
+        return NextResponse.next();
+    }
+
+    // Protect /dashboard routes (user)
+    if (pathname.startsWith('/dashboard')) {
+        if (!sessionCookie?.value) {
+            return NextResponse.redirect(new URL('/login', request.url));
+        }
         return NextResponse.next();
     }
 
@@ -25,5 +45,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: '/admin/:path*',
+    matcher: ['/admin/:path*', '/manager/:path*', '/dashboard/:path*'],
 };

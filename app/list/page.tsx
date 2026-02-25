@@ -4,6 +4,8 @@ import { parseAmenities } from '@/lib/utils';
 import PropertyCard from '@/components/PropertyCard';
 import FilterSheet from '@/components/FilterSheet';
 import ListHeader from '@/components/ListHeader';
+import SiteHeader from '@/components/SiteHeader';
+import FloatingShortlistButton from '@/components/FloatingShortlistButton';
 import { DealType, UsageType } from '@/lib/types';
 
 // ISR: Cache page at edge, revalidate every 30 seconds
@@ -134,6 +136,7 @@ export default async function ListPage({ searchParams }: ListPageProps) {
 
     return (
         <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            <SiteHeader />
             {/* Header */}
             <ListHeader areas={areas} currentUse={params.use} currentArea={params.area} />
 
@@ -176,6 +179,9 @@ export default async function ListPage({ searchParams }: ListPageProps) {
 
             {/* Filter Sheet */}
             <FilterSheet areas={areas} amenitiesVocab={amenitiesVocab} />
+
+            {/* Floating Shortlist */}
+            <FloatingShortlistButton />
         </main>
     );
 }

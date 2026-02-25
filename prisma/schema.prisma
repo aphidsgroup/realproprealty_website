@@ -18,6 +18,28 @@ model Admin {
   createdAt    DateTime @default(now())
 }
 
+model User {
+  id           String      @id @default(cuid())
+  name         String?
+  email        String?     @unique
+  phone        String?     @unique
+  passwordHash String?
+  avatarUrl    String?
+  createdAt    DateTime    @default(now())
+  shortlists   Shortlist[]
+}
+
+model Manager {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  permissions  String   @default("{\"viewUsers\":true,\"viewShortlists\":true,\"viewLeads\":true}")
+  isActive     Boolean  @default(true)
+  createdBy    String   // Admin ID who created this manager
+  createdAt    DateTime @default(now())
+}
+
 model Property {
   id              String   @id @default(cuid())
   slug            String   @unique
@@ -38,15 +60,44 @@ model Property {
   facilities      String?  // JSON array of facility names
   locationAdvantages String? // JSON array of location objects with name, category, distance
   constructionStatus String? // Construction status: "Under Construction", "Ready to Move", "Upcoming"
+  isNegotiable    Boolean  @default(false)
   isPublished     Boolean  @default(false)
   isFeatured      Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  shortlists      Shortlist[]
 
   @@index([usageType])
   @@index([areaName])
   @@index([isPublished])
   @@index([isFeatured])
+}
+
+model Shortlist {
+  id         String   @id @default(cuid())
+  userId     String
+  propertyId String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, propertyId])
+  @@index([userId])
+  @@index([propertyId])
+}
+
+model LeadFormResponse {
+  id           String   @id @default(cuid())
+  name         String
+  phone        String
+  email        String?
+  propertyType String?  // Apartment, Villa/House, Plot/Land, Office, Shop, Other
+  bhk          String?  // 1 BHK, 2 BHK, etc.
+  budget       String?  // Budget range selection
+  location     String?  // Preferred Chennai area
+  timeline     String?  // Purchase timeline
+  source       String   @default("popup")
+  createdAt    DateTime @default(now())
 }
 
 model SiteSettings {
@@ -58,5 +109,9 @@ model SiteSettings {
   phoneNumber          String   @default("+919876543210")
   whatsappTemplate     String   @default("Hi, I'm interested in {propertyTitle}. Link: {propertyUrl}")
   amenitiesVocabulary  String   @default("[\"Lift\",\"Parking\",\"Security\",\"Power Backup\",\"Water Supply\",\"Gym\",\"Swimming Pool\",\"Garden\",\"Play Area\",\"Club House\"]")
+  heroTitle            String?  // Editable hero section title
+  heroSubtitle         String?  // Editable hero subtitle
+  aboutContent         String?  // CMS: About page content
+  contactContent       String?  // CMS: Contact page content
   updatedAt            DateTime @updatedAt
 }

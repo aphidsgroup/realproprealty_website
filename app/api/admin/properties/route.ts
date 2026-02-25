@@ -59,6 +59,7 @@ function sanitizePropertyData(body: any) {
         floorPlans: typeof body.floorPlans === 'string' ? body.floorPlans : JSON.stringify(body.floorPlans || []),
         isPublished: Boolean(body.isPublished),
         isFeatured: Boolean(body.isFeatured),
+        isNegotiable: Boolean(body.isNegotiable),
     };
 }
 

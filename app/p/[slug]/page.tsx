@@ -164,9 +164,16 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                             <div>
                                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Price</p>
-                                <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                                    {formatPrice(property.priceInr)}
-                                </p>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">
+                                        {formatPrice(property.priceInr)}
+                                    </p>
+                                    {property.isNegotiable && (
+                                        <span className="px-2.5 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold rounded-full">
+                                            Negotiable
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <div>
                                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Size</p>

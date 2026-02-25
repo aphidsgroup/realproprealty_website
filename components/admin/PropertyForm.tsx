@@ -45,6 +45,7 @@ export default function PropertyForm({ property, mode }: PropertyFormProps) {
         locationAdvantages: property ? parseLocationAdvantages(property.locationAdvantages) : [],
         constructionStatus: property?.constructionStatus || '',
         tourEmbedUrl: property?.tourEmbedUrl || '',
+        isNegotiable: property?.isNegotiable || false,
         isPublished: property?.isPublished || false,
         isFeatured: property?.isFeatured || false,
     });
@@ -703,6 +704,16 @@ export default function PropertyForm({ property, mode }: PropertyFormProps) {
                             className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                         />
                         <span className="text-gray-900 dark:text-white font-medium">Feature on homepage</span>
+                    </label>
+
+                    <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={formData.isNegotiable}
+                            onChange={(e) => setFormData({ ...formData, isNegotiable: e.target.checked })}
+                            className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                        />
+                        <span className="text-gray-900 dark:text-white font-medium">Price is negotiable</span>
                     </label>
                 </div>
             </div>

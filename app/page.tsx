@@ -4,6 +4,8 @@ import { prisma } from '@/lib/db';
 import { parseAmenities } from '@/lib/utils';
 import PropertyCarousel from '@/components/PropertyCarousel';
 import SearchBar from '@/components/SearchBar';
+import SiteHeader from '@/components/SiteHeader';
+import LeadCapturePopup from '@/components/LeadCapturePopup';
 
 // ISR: Cache page at edge, revalidate every 60 seconds in background
 export const revalidate = 60;
@@ -65,16 +67,18 @@ export default async function HomePage() {
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
+            <SiteHeader />
+            <LeadCapturePopup />
             <div className="container mx-auto px-4 py-8 max-w-2xl">
-                {/* Header */}
+                {/* Hero */}
                 <header className="text-center mb-8 animate-fade-in">
                     <div className="mb-4">
-                        <div className="w-32 h-32 mx-auto flex items-center justify-center">
+                        <div className="w-24 h-24 mx-auto flex items-center justify-center">
                             <Image
                                 src="/logo.png"
                                 alt="Realprop Realty Logo"
-                                width={128}
-                                height={128}
+                                width={96}
+                                height={96}
                                 className="object-contain"
                                 priority
                             />
