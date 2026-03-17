@@ -130,7 +130,7 @@ export default function AdminLoginPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:cursor-not-allowed"
+                            className="w-full bg-gray-900 hover:bg-black disabled:bg-gray-500 text-orange-500 font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:cursor-not-allowed border border-gray-800"
                         >
                             {loading ? 'Logging in...' : `Login as ${mode === 'admin' ? 'Admin' : 'Manager'}`}
                         </button>

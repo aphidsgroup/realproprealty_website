@@ -103,7 +103,7 @@ export default function ListHeader({ areas, currentUse, currentArea }: ListHeade
                             </div>
                             <button
                                 onClick={handleSearchSubmit}
-                                className="bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold py-2.5 px-4 transition-colors"
+                                className="bg-gray-900 hover:bg-black text-orange-500 text-sm font-semibold py-2.5 px-4 transition-colors"
                             >
                                 Search
                             </button>
@@ -166,7 +166,7 @@ export default function ListHeader({ areas, currentUse, currentArea }: ListHeade
                     <Link
                         href={`/list${currentArea ? `?area=${encodeURIComponent(currentArea)}&use=residential` : '?use=residential'}`}
                         className={`flex-1 px-4 py-2 rounded-xl font-semibold text-center text-sm transition-all duration-300 ${currentUse === 'residential' || !currentUse
-                            ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md'
+                            ? 'bg-gray-900 text-orange-500 shadow-md border border-gray-800'
                             : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                             }`}
                     >
@@ -175,7 +175,7 @@ export default function ListHeader({ areas, currentUse, currentArea }: ListHeade
                     <Link
                         href={`/list${currentArea ? `?area=${encodeURIComponent(currentArea)}&use=commercial` : '?use=commercial'}`}
                         className={`flex-1 px-4 py-2 rounded-xl font-semibold text-center text-sm transition-all duration-300 ${currentUse === 'commercial'
-                            ? 'bg-gradient-to-r from-accent-500 to-accent-600 text-white shadow-md'
+                            ? 'bg-gray-900 text-orange-500 shadow-md border border-gray-800'
                             : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                             }`}
                     >
@@ -195,7 +195,7 @@ export default function ListHeader({ areas, currentUse, currentArea }: ListHeade
                                 key={area}
                                 onClick={() => handleAreaClick(area)}
                                 className={`flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-200 ${selectedAreas.includes(area)
-                                    ? 'bg-primary-500 text-white'
+                                    ? 'bg-gray-900 text-orange-500 border border-gray-800'
                                     : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                                     }`}
                             >

@@ -80,7 +80,7 @@ export default function SearchBar({ areas }: SearchBarProps) {
                 {/* Search icon button on right */}
                 <button
                     onClick={() => handleSearch()}
-                    className="h-10 w-10 mr-2 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white flex items-center justify-center transition-all duration-300 flex-shrink-0"
+                    className="h-10 w-10 mr-2 rounded-xl bg-gray-900 hover:bg-black text-orange-500 flex items-center justify-center transition-all duration-300 flex-shrink-0 border border-gray-800"
                     aria-label="Search"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

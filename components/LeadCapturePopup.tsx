@@ -93,7 +93,7 @@ export default function LeadCapturePopup() {
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Email</label>
                                     <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="you@example.com" className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
                                 </div>
-                                <button onClick={() => { if (formData.name && formData.phone) setStep(2); }} disabled={!formData.name || !formData.phone} className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl disabled:opacity-50 transition-colors">
+                                <button onClick={() => { if (formData.name && formData.phone) setStep(2); }} disabled={!formData.name || !formData.phone} className="w-full bg-gray-900 hover:bg-black text-orange-500 font-semibold py-3 rounded-xl disabled:opacity-50 transition-colors border border-gray-800">
                                     Next →
                                 </button>
                             </div>
@@ -150,7 +150,7 @@ export default function LeadCapturePopup() {
                                 </div>
                                 <div className="flex gap-3">
                                     <button onClick={() => setStep(1)} className="flex-1 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold">← Back</button>
-                                    <button onClick={handleSubmit} disabled={submitting} className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl disabled:opacity-50 transition-colors">
+                                    <button onClick={handleSubmit} disabled={submitting} className="flex-1 bg-gray-900 hover:bg-black text-orange-500 font-semibold py-3 rounded-xl disabled:opacity-50 transition-colors border border-gray-800">
                                         {submitting ? 'Sending...' : 'Submit'}
                                     </button>
                                 </div>

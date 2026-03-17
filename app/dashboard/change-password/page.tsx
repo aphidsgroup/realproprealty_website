@@ -72,7 +72,7 @@ export default function ChangePasswordPage() {
                         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Confirm New Password</label>
                         <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                     </div>
-                    <button type="submit" disabled={loading} className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl disabled:opacity-50 transition-colors">
+                    <button type="submit" disabled={loading} className="w-full bg-gray-900 hover:bg-black text-orange-500 font-semibold py-3 rounded-xl disabled:opacity-50 transition-colors border border-gray-800">
                         {loading ? 'Changing...' : 'Change Password'}
                     </button>
                 </form>

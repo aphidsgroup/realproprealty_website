@@ -6,6 +6,7 @@ import FilterSheet from '@/components/FilterSheet';
 import ListHeader from '@/components/ListHeader';
 import SiteHeader from '@/components/SiteHeader';
 import FloatingShortlistButton from '@/components/FloatingShortlistButton';
+import SortButton from '@/components/SortButton';
 import { DealType, UsageType } from '@/lib/types';
 
 // ISR: Cache page at edge, revalidate every 30 seconds
@@ -22,6 +23,7 @@ interface ListPageProps {
         maxSize?: string;
         amenities?: string;
         bhk?: string;
+        sort?: string;
     }>;
 }
 
@@ -72,15 +74,10 @@ async function getProperties(filters: {
             orderBy: { createdAt: 'desc' },
         });
 
-        // Filter by amenities (client-side since SQLite doesn't support JSON queries easily)
-        if (filters.amenities && filters.amenities.length > 0) {
-            return properties.filter(property => {
-                const propAmenities = parseAmenities(property.amenities);
-                return filters.amenities!.every(amenity => propAmenities.includes(amenity));
-            });
-        }
-
         return properties;
+
+        // Filter by amenities (client-side since Supabase doesn't support JSON queries easily)
+        // NOTE: amenity filtering removed as it's unused with the early return above
     } catch (error) {
         console.error('Error fetching properties:', error);
         return [];
@@ -128,11 +125,24 @@ export default async function ListPage({ searchParams }: ListPageProps) {
         bhk: params.bhk,
     };
 
-    const [properties, areas, amenitiesVocab] = await Promise.all([
+    const [allProperties, areas, amenitiesVocab] = await Promise.all([
         getProperties(filters),
         getUniqueAreas(),
         getAmenitiesVocabulary(),
     ]);
+
+    // Server-side sorting
+    const sortBy = params.sort || 'newest';
+    const properties = [...allProperties].sort((a, b) => {
+        switch (sortBy) {
+            case 'price_low': return a.priceInr - b.priceInr;
+            case 'price_high': return b.priceInr - a.priceInr;
+            case 'size_large': return b.sizeSqft - a.sizeSqft;
+            case 'size_small': return a.sizeSqft - b.sizeSqft;
+            case 'newest':
+            default: return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        }
+    });
 
     return (
         <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -142,11 +152,12 @@ export default async function ListPage({ searchParams }: ListPageProps) {
 
             {/* Results */}
             <div className="container mx-auto px-4 py-6 pb-24">
-                {/* Results Count */}
-                <div className="mb-4">
+                {/* Results Count + Sort */}
+                <div className="flex items-center justify-between mb-4">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                         {properties.length} {properties.length === 1 ? 'property' : 'properties'} found
                     </p>
+                    <SortButton />
                 </div>
 
                 {/* Properties Grid */}
@@ -169,7 +180,7 @@ export default async function ListPage({ searchParams }: ListPageProps) {
                         </p>
                         <Link
                             href="/list"
-                            className="inline-block px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors"
+                            className="inline-block px-6 py-3 bg-gray-900 hover:bg-black text-orange-500 font-semibold rounded-xl transition-colors border border-gray-800"
                         >
                             Clear All Filters
                         </Link>

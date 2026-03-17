@@ -153,7 +153,7 @@ export default function ManagersPage() {
 
                             <div className="flex gap-3 pt-2">
                                 <button type="button" onClick={() => { setShowForm(false); setEditingManager(null); setError(''); }} className="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold">Cancel</button>
-                                <button type="submit" disabled={saving} className="flex-1 px-4 py-3 bg-primary-600 text-white rounded-xl font-semibold disabled:opacity-50">{saving ? 'Saving...' : editingManager ? 'Update' : 'Create'}</button>
+                                <button type="submit" disabled={saving} className="flex-1 px-4 py-3 bg-gray-900 text-orange-500 rounded-xl font-semibold disabled:opacity-50 hover:bg-black transition-colors border border-gray-800">{saving ? 'Saving...' : editingManager ? 'Update' : 'Create'}</button>
                             </div>
                         </form>
                     </div>

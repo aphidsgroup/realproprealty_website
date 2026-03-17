@@ -61,7 +61,7 @@ export default function MyShortlistsPage() {
                         <p className="text-4xl mb-4">💛</p>
                         <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">No shortlisted properties</p>
                         <p className="text-gray-500 dark:text-gray-400 mb-6">Browse properties and tap the heart to save them here.</p>
-                        <Link href="/list" className="px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition-colors">
+                        <Link href="/list" className="px-6 py-3 bg-gray-900 text-orange-500 rounded-xl font-semibold hover:bg-black transition-colors border border-gray-800">
                             Browse Properties
                         </Link>
                     </div>
