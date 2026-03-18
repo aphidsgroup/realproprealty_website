@@ -72,10 +72,10 @@ export default async function HomePage() {
                 {/* Hero — no logo, already in header */}
                 <header className="text-center mb-8 animate-fade-in">
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                        Your Trusted<br />Real Estate Partner
+                        {settings?.heroTitle || 'Your Trusted\nReal Estate Partner'}
                     </h1>
                     <p className="text-lg text-gray-600 dark:text-gray-400">
-                        {settings?.tagline || '360° Tours • Premium Properties • Chennai'}
+                        {settings?.heroSubtitle || settings?.tagline || '360° Tours • Premium Properties • Chennai'}
                     </p>
                 </header>
 

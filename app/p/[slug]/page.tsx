@@ -10,6 +10,7 @@ import CarouselWrapper from '@/components/CarouselWrapper';
 import ViewAllButton from '@/components/ViewAllButton';
 import SiteHeader from '@/components/SiteHeader';
 import FloatingShortlistButton from '@/components/FloatingShortlistButton';
+import VerifiedBadge from '@/components/VerifiedBadge';
 
 // ISR: Cache page at edge, revalidate every 60 seconds
 export const revalidate = 60;
@@ -124,6 +125,19 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                             {property.propertySubtype}
                         </p>
                     )}
+                    {/* Trust Badges */}
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                        {property.isVerified && <VerifiedBadge size="lg" />}
+                        {property.isBachelorFriendly && (
+                            <span className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-sm font-bold rounded-full">🎓 Bachelor Friendly</span>
+                        )}
+                        {property.isPetFriendly && (
+                            <span className="px-3 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-sm font-bold rounded-full">🐾 Pet Friendly</span>
+                        )}
+                        {property.isVegOnly && (
+                            <span className="px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-bold rounded-full">🥬 Veg Only</span>
+                        )}
+                    </div>
                 </div>
 
                 {/* 360° Tour */}
@@ -488,7 +502,15 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Property Valuation</h3>
                                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Market price assessment and comparative analysis</p>
-                                        <span className="text-xs text-green-600 dark:text-green-400 font-medium">Available on Request</span>
+                                        <a
+                                            href={`https://wa.me/${(settings?.whatsappNumber || '+919360393324').replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, I need a Property Valuation for: ${property.title} (${property.areaName}). Link: ${propertyUrl}`)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition-colors"
+                                        >
+                                            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.631-1.46A11.947 11.947 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-2.171 0-4.178-.686-5.822-1.854l-.418-.276-2.74.864.834-2.664-.302-.448A9.73 9.73 0 012.25 12 9.75 9.75 0 0112 2.25 9.75 9.75 0 0121.75 12 9.75 9.75 0 0112 21.75z"/></svg>
+                                            Enquire on WhatsApp
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -504,7 +526,15 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Legal Documents Verification</h3>
                                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Title verification, encumbrance check, and legal compliance</p>
-                                        <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">Available on Request</span>
+                                        <a
+                                            href={`https://wa.me/${(settings?.whatsappNumber || '+919360393324').replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, I need Legal Documents Verification for: ${property.title} (${property.areaName}). Link: ${propertyUrl}`)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-lg transition-colors"
+                                        >
+                                            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.631-1.46A11.947 11.947 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-2.171 0-4.178-.686-5.822-1.854l-.418-.276-2.74.864.834-2.664-.302-.448A9.73 9.73 0 012.25 12 9.75 9.75 0 0112 2.25 9.75 9.75 0 0121.75 12 9.75 9.75 0 0112 21.75z"/></svg>
+                                            Enquire on WhatsApp
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -520,7 +550,15 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Structural Auditing</h3>
                                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Professional engineering assessments at multiple levels</p>
-                                        <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">Available on Request</span>
+                                        <a
+                                            href={`https://wa.me/${(settings?.whatsappNumber || '+919360393324').replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, I need a Structural Audit for: ${property.title} (${property.areaName}). Link: ${propertyUrl}`)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors"
+                                        >
+                                            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.631-1.46A11.947 11.947 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-2.171 0-4.178-.686-5.822-1.854l-.418-.276-2.74.864.834-2.664-.302-.448A9.73 9.73 0 012.25 12 9.75 9.75 0 0112 2.25 9.75 9.75 0 0121.75 12 9.75 9.75 0 0112 21.75z"/></svg>
+                                            Enquire on WhatsApp
+                                        </a>
                                     </div>
                                 </div>
 

@@ -61,6 +61,10 @@ model Property {
   locationAdvantages String? // JSON array of location objects with name, category, distance
   constructionStatus String? // Construction status: "Under Construction", "Ready to Move", "Upcoming"
   isNegotiable    Boolean  @default(false)
+  isVerified      Boolean  @default(false)
+  isBachelorFriendly Boolean @default(false)
+  isPetFriendly   Boolean  @default(false)
+  isVegOnly       Boolean  @default(false)
   isPublished     Boolean  @default(false)
   isFeatured      Boolean  @default(false)
   createdAt       DateTime @default(now())
@@ -113,5 +117,7 @@ model SiteSettings {
   heroSubtitle         String?  // Editable hero subtitle
   aboutContent         String?  // CMS: About page content
   contactContent       String?  // CMS: Contact page content
+  footerText           String?  // CMS: Footer text
+  contentSections      String?  // JSON array defining section order for property detail page
   updatedAt            DateTime @updatedAt
 }

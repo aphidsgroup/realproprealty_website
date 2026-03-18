@@ -46,6 +46,10 @@ export default function PropertyForm({ property, mode }: PropertyFormProps) {
         constructionStatus: property?.constructionStatus || '',
         tourEmbedUrl: property?.tourEmbedUrl || '',
         isNegotiable: property?.isNegotiable || false,
+        isVerified: property?.isVerified || false,
+        isBachelorFriendly: property?.isBachelorFriendly || false,
+        isPetFriendly: property?.isPetFriendly || false,
+        isVegOnly: property?.isVegOnly || false,
         isPublished: property?.isPublished || false,
         isFeatured: property?.isFeatured || false,
     });
@@ -715,6 +719,46 @@ export default function PropertyForm({ property, mode }: PropertyFormProps) {
                         />
                         <span className="text-gray-900 dark:text-white font-medium">Price is negotiable</span>
                     </label>
+
+                    <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={formData.isVerified}
+                            onChange={(e) => setFormData({ ...formData, isVerified: e.target.checked })}
+                            className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                        />
+                        <span className="text-gray-900 dark:text-white font-medium">✅ Physically Verified</span>
+                    </label>
+
+                    <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={formData.isBachelorFriendly}
+                            onChange={(e) => setFormData({ ...formData, isBachelorFriendly: e.target.checked })}
+                            className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <span className="text-gray-900 dark:text-white font-medium">🎓 Bachelor Friendly</span>
+                    </label>
+
+                    <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={formData.isPetFriendly}
+                            onChange={(e) => setFormData({ ...formData, isPetFriendly: e.target.checked })}
+                            className="w-5 h-5 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+                        />
+                        <span className="text-gray-900 dark:text-white font-medium">🐾 Pet Friendly</span>
+                    </label>
+
+                    <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={formData.isVegOnly}
+                            onChange={(e) => setFormData({ ...formData, isVegOnly: e.target.checked })}
+                            className="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                        />
+                        <span className="text-gray-900 dark:text-white font-medium">🥬 Veg Only</span>
+                    </label>
                 </div>
             </div>
 
@@ -730,7 +774,7 @@ export default function PropertyForm({ property, mode }: PropertyFormProps) {
                 <button
                     type="submit"
                     disabled={loading || uploading}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl transition-all disabled:cursor-not-allowed"
+                    className="flex-1 px-6 py-3 bg-gray-900 hover:bg-black disabled:bg-gray-500 text-orange-500 font-semibold rounded-xl transition-all disabled:cursor-not-allowed border border-gray-800"
                 >
                     {uploading ? 'Uploading Images...' : loading ? 'Saving...' : mode === 'create' ? 'Create Property' : 'Update Property'}
                 </button>

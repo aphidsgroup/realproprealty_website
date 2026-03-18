@@ -12,13 +12,18 @@ export default function SettingsPage() {
         brandName: '',
         tagline: '',
         city: '',
+        heroTitle: '',
+        heroSubtitle: '',
+        footerText: '',
         whatsappNumber: '',
         phoneNumber: '',
         whatsappTemplate: '',
         amenitiesVocabulary: [] as string[],
+        contentSections: '[]',
     });
 
     const [newAmenity, setNewAmenity] = useState('');
+    const [revalidating, setRevalidating] = useState(false);
 
     useEffect(() => {
         fetchSettings();
@@ -84,6 +89,20 @@ export default function SettingsPage() {
         });
     };
 
+    const handleRevalidate = async () => {
+        setRevalidating(true);
+        try {
+            const res = await fetch('/api/admin/revalidate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paths: ['/', '/list'] }),
+            });
+            if (res.ok) alert('Cache cleared! Pages will refresh momentarily.');
+            else throw new Error('Failed');
+        } catch { alert('Revalidation failed'); }
+        setRevalidating(false);
+    };
+
     if (loading) {
         return (
             <div className="container mx-auto px-4 py-8">
@@ -146,6 +165,52 @@ export default function SettingsPage() {
                                 required
                                 value={formData.city}
                                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Homepage CMS */}
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Homepage Content</h2>
+
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                                Hero Title
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.heroTitle}
+                                onChange={(e) => setFormData({ ...formData, heroTitle: e.target.value })}
+                                placeholder="Find Your Dream Home in Chennai"
+                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                                Hero Subtitle
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.heroSubtitle}
+                                onChange={(e) => setFormData({ ...formData, heroSubtitle: e.target.value })}
+                                placeholder="Explore premium properties with 360° virtual tours"
+                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                                Footer Text
+                            </label>
+                            <textarea
+                                rows={2}
+                                value={formData.footerText}
+                                onChange={(e) => setFormData({ ...formData, footerText: e.target.value })}
+                                placeholder="© 2024 Realprop Realty. All rights reserved."
                                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                             />
                         </div>
@@ -256,6 +321,14 @@ export default function SettingsPage() {
                 <div className="flex gap-4">
                     <button
                         type="button"
+                        onClick={handleRevalidate}
+                        disabled={revalidating}
+                        className="px-6 py-3 border-2 border-orange-500 text-orange-500 font-semibold rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors disabled:opacity-50"
+                    >
+                        {revalidating ? 'Clearing...' : '🔄 Clear Cache'}
+                    </button>
+                    <button
+                        type="button"
                         onClick={() => router.back()}
                         className="flex-1 px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
@@ -264,7 +337,7 @@ export default function SettingsPage() {
                     <button
                         type="submit"
                         disabled={saving}
-                        className="flex-1 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl transition-all disabled:cursor-not-allowed"
+                        className="flex-1 px-6 py-3 bg-gray-900 hover:bg-black disabled:bg-gray-500 text-orange-500 font-semibold rounded-xl transition-all disabled:cursor-not-allowed border border-gray-800"
                     >
                         {saving ? 'Saving...' : 'Save Settings'}
                     </button>

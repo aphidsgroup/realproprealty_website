@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
 import { isAuthenticated } from '@/lib/auth';
 import { generateSlug } from '@/lib/utils';
@@ -60,6 +61,10 @@ function sanitizePropertyData(body: any) {
         isPublished: Boolean(body.isPublished),
         isFeatured: Boolean(body.isFeatured),
         isNegotiable: Boolean(body.isNegotiable),
+        isVerified: Boolean(body.isVerified),
+        isBachelorFriendly: Boolean(body.isBachelorFriendly),
+        isPetFriendly: Boolean(body.isPetFriendly),
+        isVegOnly: Boolean(body.isVegOnly),
     };
 }
 
@@ -89,6 +94,10 @@ export async function POST(request: Request) {
                 slug: uniqueSlug,
             },
         });
+
+        // Instant cache invalidation
+        revalidatePath('/');
+        revalidatePath('/list');
 
         return NextResponse.json(property, { status: 201 });
     } catch (error) {

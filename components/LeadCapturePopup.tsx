@@ -23,7 +23,7 @@ export default function LeadCapturePopup() {
         const dismissed = sessionStorage.getItem('leadPopupDismissed');
         if (dismissed) return;
 
-        const timer = setTimeout(() => setShow(true), 10000); // 10 seconds
+        const timer = setTimeout(() => setShow(true), 15000); // 15 seconds
         return () => clearTimeout(timer);
     }, []);
 

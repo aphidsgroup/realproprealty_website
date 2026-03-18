@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
 import { isAuthenticated } from '@/lib/auth';
 
@@ -29,6 +30,11 @@ function sanitizePropertyData(body: any) {
     if (body.floorPlans !== undefined) data.floorPlans = typeof body.floorPlans === 'string' ? body.floorPlans : JSON.stringify(body.floorPlans || []);
     if (body.isPublished !== undefined) data.isPublished = Boolean(body.isPublished);
     if (body.isFeatured !== undefined) data.isFeatured = Boolean(body.isFeatured);
+    if (body.isNegotiable !== undefined) data.isNegotiable = Boolean(body.isNegotiable);
+    if (body.isVerified !== undefined) data.isVerified = Boolean(body.isVerified);
+    if (body.isBachelorFriendly !== undefined) data.isBachelorFriendly = Boolean(body.isBachelorFriendly);
+    if (body.isPetFriendly !== undefined) data.isPetFriendly = Boolean(body.isPetFriendly);
+    if (body.isVegOnly !== undefined) data.isVegOnly = Boolean(body.isVegOnly);
     if (body.slug !== undefined) data.slug = body.slug;
 
     return data;
@@ -76,6 +82,11 @@ export async function PUT(
             data,
         });
 
+        // Instant cache invalidation
+        revalidatePath('/');
+        revalidatePath('/list');
+        revalidatePath(`/p/${property.slug}`);
+
         return NextResponse.json(property);
     } catch (error) {
         console.error('Error updating property:', error);
@@ -94,7 +105,13 @@ export async function DELETE(
 
     try {
         const { id } = await context.params;
+        const property = await prisma.property.findUnique({ where: { id } });
         await prisma.property.delete({ where: { id } });
+
+        // Instant cache invalidation
+        revalidatePath('/');
+        revalidatePath('/list');
+        if (property?.slug) revalidatePath(`/p/${property.slug}`);
 
         return NextResponse.json({ success: true });
     } catch (error) {
