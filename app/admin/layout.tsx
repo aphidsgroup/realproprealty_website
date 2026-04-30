@@ -38,11 +38,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between h-16">
                         <div className="flex items-center gap-8">
-                            <Link href="/admin" className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-100 to-yellow-300 border border-yellow-400 flex items-center justify-center shadow-sm">
-                                    <span className="font-bold text-yellow-800 text-xs">RPR</span>
+                            <Link href="/admin" className="flex items-center gap-3">
+                                <div className="w-10 h-10 relative">
+                                    <img src="/logo.png" alt="Realprop Realty" className="w-full h-full object-contain" />
                                 </div>
-                                <span className="font-bold text-gray-900 dark:text-white">RPR Admin</span>
+                                <div className="flex flex-col">
+                                    <span className="font-extrabold text-gray-900 dark:text-white leading-none tracking-tight">Realprop Realty</span>
+                                    <span className="text-[10px] font-bold text-yellow-600 uppercase tracking-widest mt-0.5">Admin CMS</span>
+                                </div>
                             </Link>
 
                             <div className="hidden lg:flex items-center gap-1">

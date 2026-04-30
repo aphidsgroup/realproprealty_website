@@ -96,11 +96,14 @@ export default function ManagerDashboard() {
             <div className="min-h-screen bg-[#fafafa] pb-24 font-sans text-gray-900">
                 {/* Top Logo Header */}
                 <div className="bg-white px-4 py-3 flex justify-between items-center shadow-sm z-10 relative">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-100 to-yellow-300 border border-yellow-400 flex items-center justify-center shadow-sm">
-                            <span className="font-bold text-yellow-800 text-xs">RPR</span>
+                    <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 relative">
+                            <img src="/logo.png" alt="Realprop Realty" className="w-full h-full object-contain" />
                         </div>
-                        <span className="font-bold text-lg">Realprop Realty</span>
+                        <div className="flex flex-col">
+                            <span className="font-extrabold text-gray-900 leading-none tracking-tight">Realprop Realty</span>
+                            <span className="text-[9px] font-bold text-yellow-600 uppercase tracking-widest mt-0.5">Manager Console</span>
+                        </div>
                     </div>
                     <button className="p-2 text-gray-600">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
@@ -230,11 +233,14 @@ export default function ManagerDashboard() {
         <div className="min-h-screen bg-[#fafafa] pb-24 font-sans text-gray-900">
             {/* Top Logo Header */}
             <div className="bg-white px-4 py-3 flex justify-between items-center shadow-sm z-10 relative">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-100 to-yellow-300 border border-yellow-400 flex items-center justify-center shadow-sm">
-                        <span className="font-bold text-yellow-800 text-xs">RPR</span>
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 relative">
+                        <img src="/logo.png" alt="Realprop Realty" className="w-full h-full object-contain" />
                     </div>
-                    <span className="font-bold text-lg">Realprop Realty</span>
+                    <div className="flex flex-col">
+                        <span className="font-extrabold text-gray-900 leading-none tracking-tight text-[15px]">Realprop Realty</span>
+                        <span className="text-[9px] font-bold text-yellow-600 uppercase tracking-widest mt-0.5">Manager Console</span>
+                    </div>
                 </div>
                 <button className="p-2 text-gray-600">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
