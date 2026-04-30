@@ -22,7 +22,7 @@ export async function GET() {
                 title: true,
                 areaName: true,
                 createdAt: true,
-                price: true,
+                priceInr: true,
                 isPublished: true,
                 usageType: true
             }

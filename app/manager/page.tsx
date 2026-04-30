@@ -300,7 +300,7 @@ export default function ManagerDashboard() {
 
                                     <h3 className="font-bold text-[15px] text-gray-900 pr-16 mb-1 truncate">{prop.title}</h3>
                                     <p className="text-[11px] text-gray-500 mb-3">{prop.areaName} • {new Date(prop.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</p>
-                                    <p className="font-bold text-yellow-600 mb-5 text-[15px]">₹{prop.price?.toLocaleString() || 'Contact'}</p>
+                                    <p className="font-bold text-yellow-600 mb-5 text-[15px]">₹{prop.priceInr?.toLocaleString() || 'Contact'}</p>
 
                                     <div className="flex gap-2">
                                         <Link href={`/manager/properties/${prop.id}/edit`} className="flex-1 text-center py-2 bg-[#fffdf0] text-yellow-700 text-xs font-bold rounded-lg border border-yellow-100 flex items-center justify-center gap-1 hover:bg-yellow-50 transition-colors">
