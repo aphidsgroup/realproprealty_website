@@ -37,6 +37,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('[Manager Login] ERROR:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ error: 'Internal server error: ' + (error instanceof Error ? error.message : 'Unknown') }, { status: 500 });
     }
 }
