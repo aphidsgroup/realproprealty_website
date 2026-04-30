@@ -11,8 +11,8 @@ export async function POST(request: Request) {
         const session = await getSession();
         const { currentPassword, newEmail, newPassword } = await request.json();
 
-        // 1. Verify current admin
-        const admin = await prisma.user.findUnique({
+        // 1. Verify current admin (Admins are in the 'Admin' table)
+        const admin = await prisma.admin.findUnique({
             where: { id: session.userId }
         });
 
@@ -29,8 +29,8 @@ export async function POST(request: Request) {
         // 3. Update data
         const updateData: any = {};
         if (newEmail) {
-            // Check if email taken
-            const existing = await prisma.user.findUnique({ where: { email: newEmail } });
+            // Check if email taken in Admin table
+            const existing = await prisma.admin.findUnique({ where: { email: newEmail } });
             if (existing && existing.id !== admin.id) {
                 return NextResponse.json({ error: 'Email already in use' }, { status: 409 });
             }
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'No updates provided' }, { status: 400 });
         }
 
-        await prisma.user.update({
+        await prisma.admin.update({
             where: { id: admin.id },
             data: updateData
         });
