@@ -186,7 +186,7 @@ export default function ManagersPage() {
                         console.error('Error parsing permissions for manager', manager.id);
                     }
                     const isExpanded = expandedManager === manager.id;
-                    ...     
+                    
                     return (
                         <div key={manager.id} className="bg-white rounded-[2.5rem] shadow-sm border border-gray-50 overflow-hidden transition-all hover:shadow-md">
                             <div className="p-8 flex items-center justify-between">
@@ -237,7 +237,7 @@ export default function ManagersPage() {
                                             { id: 'addProperties', label: 'Add New Properties', icon: 'M12 6v6m0 0v6m0-6h6m-6 0H6' },
                                             { id: 'editProperties', label: 'Edit Properties', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' }
                                         ].map(control => {
-                                            const isEnabled = perms[control.id];
+                                            const isEnabled = (perms as any)[control.id];
                                             return (
                                                 <div key={control.id} className={`p-5 rounded-2xl border-2 flex items-start gap-4 transition-all ${isEnabled ? 'bg-green-50/50 border-green-200 shadow-sm' : 'bg-gray-50/50 border-gray-100 opacity-60'}`}>
                                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isEnabled ? 'bg-white text-green-600' : 'bg-white text-gray-400'}`}>
