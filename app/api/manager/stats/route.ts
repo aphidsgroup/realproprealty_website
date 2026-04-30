@@ -12,11 +12,30 @@ export async function GET() {
         }
 
         const users = await prisma.user.count();
-        const leads = await prisma.leadFormResponse.count();
+        const leads = await prisma.onboardingSubmission.count({ where: { status: 'pending' } });
+        const propertiesCount = await prisma.property.count();
+        const properties = await prisma.property.findMany({
+            orderBy: { createdAt: 'desc' },
+            take: 10,
+            select: {
+                id: true,
+                title: true,
+                areaName: true,
+                createdAt: true,
+                price: true,
+                isPublished: true,
+                usageType: true
+            }
+        });
+        
+        const pendingSubmissions = await prisma.onboardingSubmission.findMany({
+            where: { status: 'pending' },
+            orderBy: { createdAt: 'desc' },
+        });
 
-        return NextResponse.json({ users, leads });
+        return NextResponse.json({ users, leads, propertiesCount, properties, pendingSubmissions });
     } catch (error) {
         console.error('[Manager Stats] ERROR:', error);
-        return NextResponse.json({ users: 0, leads: 0 });
+        return NextResponse.json({ users: 0, leads: 0, propertiesCount: 0, properties: [], pendingSubmissions: [] });
     }
 }

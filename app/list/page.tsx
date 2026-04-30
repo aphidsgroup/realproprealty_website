@@ -76,7 +76,7 @@ async function getProperties(filters: {
 
         return properties;
 
-        // Filter by amenities (client-side since Supabase doesn't support JSON queries easily)
+        // Filter by amenities (client-side processing for JSON fields)
         // NOTE: amenity filtering removed as it's unused with the early return above
     } catch (error) {
         console.error('Error fetching properties:', error);

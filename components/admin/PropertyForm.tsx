@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Property } from '@prisma/client';
 import { generateSlug, stringifyAmenities, parseAmenities, parseFacilities, stringifyFacilities, parseLocationAdvantages, stringifyLocationAdvantages, LocationAdvantage } from '@/lib/utils';
-import { uploadFileToStorage } from '@/lib/supabase-client';
+import { uploadFileToStorage } from '@/lib/upload-client';
 
 interface PropertyFormProps {
     property?: Property;
@@ -132,7 +132,7 @@ export default function PropertyForm({ property, mode }: PropertyFormProps) {
         try {
             let imageUrls = imagePreviews.filter(url => url.startsWith('/properties/') || url.startsWith('https://'));
 
-            // Upload new images directly to Supabase Storage (bypasses Vercel 4.5MB limit)
+            // Upload new images
             if (imageFiles.length > 0) {
                 setUploading(true);
                 for (let i = 0; i < imageFiles.length; i++) {
@@ -142,7 +142,7 @@ export default function PropertyForm({ property, mode }: PropertyFormProps) {
                 setUploading(false);
             }
 
-            // Upload floor plans directly to Supabase Storage
+            // Upload floor plans
             let floorPlanUrls = floorPlanPreviews.filter(fp => fp.url.startsWith('/floorplans/') || fp.url.startsWith('https://')).map(fp => fp.url);
 
             if (floorPlanFiles.length > 0) {
