@@ -37,8 +37,10 @@ export default function ManagersPage() {
         try {
             const res = await fetch('/api/admin/managers');
             const data = await res.json();
-            setManagers(data || []);
-        } catch { /* */ }
+            setManagers(Array.isArray(data) ? data : []);
+        } catch { 
+            setManagers([]);
+        }
         setLoading(false);
     };
 
@@ -176,10 +178,15 @@ export default function ManagersPage() {
 
             {/* Manager List */}
             <div className="space-y-6">
-                {managers.map(manager => {
-                    const perms = JSON.parse(manager.permissions);
+                {(managers || []).map(manager => {
+                    let perms = { viewLeads: false, viewUsers: false, viewProperties: false, addProperties: false, editProperties: false };
+                    try {
+                        perms = JSON.parse(manager.permissions || '{}');
+                    } catch (e) {
+                        console.error('Error parsing permissions for manager', manager.id);
+                    }
                     const isExpanded = expandedManager === manager.id;
-                    
+                    ...     
                     return (
                         <div key={manager.id} className="bg-white rounded-[2.5rem] shadow-sm border border-gray-50 overflow-hidden transition-all hover:shadow-md">
                             <div className="p-8 flex items-center justify-between">

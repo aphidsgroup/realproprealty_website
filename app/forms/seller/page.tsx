@@ -72,8 +72,8 @@ export default function SellerForm() {
                 {/* Header */}
                 <div className="text-center mb-10">
                     <div className="inline-flex items-center gap-2 mb-4">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-100">
-                            <span className="font-bold text-white text-sm">RPR</span>
+                        <div className="w-10 h-10 relative">
+                            <img src="/logo.png" alt="Realprop Realty" className="w-full h-full object-contain" />
                         </div>
                         <span className="font-bold text-xl tracking-tight">Realprop Realty</span>
                     </div>
