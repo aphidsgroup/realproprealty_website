@@ -70,7 +70,7 @@ export default function ChangeRequestsPage() {
                             <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50 dark:bg-gray-900/50">
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
-                                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${req.type === 'delete_property' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${req.type === 'delete_property' ? 'bg-red-100 text-red-700' : 'bg-primary-100 text-primary-700'}`}>
                                             {req.type.replace('_', ' ')}
                                         </span>
                                         <h3 className="text-xl font-bold text-gray-900 dark:text-white">{req.entityTitle}</h3>

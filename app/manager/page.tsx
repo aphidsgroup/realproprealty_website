@@ -86,7 +86,7 @@ export default function ManagerDashboard() {
 
     if (loading) return (
         <div className="min-h-screen flex items-center justify-center bg-[#fafafa]">
-            <div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
     );
 
@@ -102,7 +102,7 @@ export default function ManagerDashboard() {
                         </div>
                         <div className="flex flex-col">
                             <span className="font-extrabold text-gray-900 leading-none tracking-tight">Realprop Realty</span>
-                            <span className="text-[9px] font-bold text-yellow-600 uppercase tracking-widest mt-0.5">Manager Console</span>
+                            <span className="text-[9px] font-bold text-primary-600 uppercase tracking-widest mt-0.5">Manager Console</span>
                         </div>
                     </div>
                     <button className="p-2 text-gray-600">
@@ -133,7 +133,7 @@ export default function ManagerDashboard() {
                                     <div 
                                         key={sub.id} 
                                         onClick={() => setSelectedSubmission(sub)}
-                                        className={`p-4 rounded-[1.25rem] cursor-pointer border-2 transition-all ${selectedSubmission.id === sub.id ? 'bg-[#fffdf0] border-yellow-400 shadow-sm' : 'bg-white border-transparent hover:border-gray-100 shadow-sm'}`}
+                                        className={`p-4 rounded-[1.25rem] cursor-pointer border-2 transition-all ${selectedSubmission.id === sub.id ? 'bg-[#fffdf0] border-primary-400 shadow-sm' : 'bg-white border-transparent hover:border-gray-100 shadow-sm'}`}
                                     >
                                         <div className="flex justify-between items-center mb-2">
                                             <span className={`px-2 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase ${sub.formType === 'buyer' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'}`}>
@@ -239,7 +239,7 @@ export default function ManagerDashboard() {
                     </div>
                     <div className="flex flex-col">
                         <span className="font-extrabold text-gray-900 leading-none tracking-tight text-[15px]">Realprop Realty</span>
-                        <span className="text-[9px] font-bold text-yellow-600 uppercase tracking-widest mt-0.5">Manager Console</span>
+                        <span className="text-[9px] font-bold text-primary-600 uppercase tracking-widest mt-0.5">Manager Console</span>
                     </div>
                 </div>
                 <button className="p-2 text-gray-600">
@@ -250,7 +250,7 @@ export default function ManagerDashboard() {
             {/* Secondary Header */}
             <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-b border-gray-100">
                 <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center">
+                    <div className="w-6 h-6 bg-primary-500 text-white rounded flex items-center justify-center">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                     </div>
                     <span className="font-bold text-[15px]">Manager</span>
@@ -258,7 +258,7 @@ export default function ManagerDashboard() {
                 <div className="flex items-center gap-2">
                     <Link href="/manager/leads?type=seller" className="text-xs font-bold text-blue-600 px-2">Seller Leads</Link>
                     <Link href="/manager/leads?type=buyer" className="text-xs font-bold text-purple-600 px-2">Buyer Leads</Link>
-                    <Link href="/manager/properties/new" className="bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-bold px-3 py-1.5 rounded shadow-sm flex items-center gap-1">
+                    <Link href="/manager/properties/new" className="bg-primary-500 hover:bg-primary-600 text-white text-xs font-bold px-3 py-1.5 rounded shadow-sm flex items-center gap-1">
                         + Add
                     </Link>
                     <button onClick={handleLogout} className="text-gray-400 hover:text-gray-600 ml-1">
@@ -272,7 +272,7 @@ export default function ManagerDashboard() {
                 {/* KPI Row */}
                 <div className="flex gap-3 mb-6">
                     <div className="flex-1 bg-white rounded-xl shadow-sm py-4 flex flex-col items-center justify-center border border-gray-50">
-                        <span className="text-xl font-bold text-yellow-600 mb-1">{stats.leads}</span>
+                        <span className="text-xl font-bold text-primary-600 mb-1">{stats.leads}</span>
                         <span className="text-[10px] text-gray-500 font-medium">Responses</span>
                     </div>
                     <div className="flex-1 bg-white rounded-xl shadow-sm py-4 flex flex-col items-center justify-center border border-gray-50">
@@ -306,10 +306,10 @@ export default function ManagerDashboard() {
 
                                     <h3 className="font-bold text-[15px] text-gray-900 pr-16 mb-1 truncate">{prop.title}</h3>
                                     <p className="text-[11px] text-gray-500 mb-3">{prop.areaName} • {new Date(prop.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</p>
-                                    <p className="font-bold text-yellow-600 mb-5 text-[15px]">₹{prop.priceInr?.toLocaleString() || 'Contact'}</p>
+                                    <p className="font-bold text-primary-600 mb-5 text-[15px]">₹{prop.priceInr?.toLocaleString() || 'Contact'}</p>
 
                                     <div className="flex gap-2">
-                                        <Link href={`/manager/properties/${prop.id}/edit`} className="flex-1 text-center py-2 bg-[#fffdf0] text-yellow-700 text-xs font-bold rounded-lg border border-yellow-100 flex items-center justify-center gap-1 hover:bg-yellow-50 transition-colors">
+                                        <Link href={`/manager/properties/${prop.id}/edit`} className="flex-1 text-center py-2 bg-[#fffdf0] text-primary-700 text-xs font-bold rounded-lg border border-primary-100 flex items-center justify-center gap-1 hover:bg-primary-50 transition-colors">
                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                             Edit
                                         </Link>
@@ -333,24 +333,24 @@ export default function ManagerDashboard() {
                     {activeTab === 'forms' && (
                         <>
                             {/* Shareable Links */}
-                            <div className="bg-[#fffdf0] border border-yellow-100 rounded-[1.25rem] p-5 shadow-sm mb-6">
-                                <h3 className="flex items-center gap-2 text-sm font-bold text-yellow-800 mb-4">
+                            <div className="bg-[#fffdf0] border border-primary-100 rounded-[1.25rem] p-5 shadow-sm mb-6">
+                                <h3 className="flex items-center gap-2 text-sm font-bold text-primary-800 mb-4">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
                                     Shareable Form Links
                                 </h3>
                                 <div className="space-y-3">
-                                    <div className="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-yellow-50">
+                                    <div className="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-primary-50">
                                         <span className="text-xs font-bold text-gray-600">Buyer Form:</span>
                                         <div className="flex items-center gap-2">
                                             <span className="text-[11px] text-gray-400 bg-gray-50 px-2 py-1 rounded">/forms/buyer</span>
-                                            <button className="text-xs font-bold text-yellow-600 hover:text-yellow-700">Copy</button>
+                                            <button className="text-xs font-bold text-primary-600 hover:text-primary-700">Copy</button>
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-yellow-50">
+                                    <div className="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-primary-50">
                                         <span className="text-xs font-bold text-gray-600">Seller Form:</span>
                                         <div className="flex items-center gap-2">
                                             <span className="text-[11px] text-gray-400 bg-gray-50 px-2 py-1 rounded">/forms/seller</span>
-                                            <button className="text-xs font-bold text-yellow-600 hover:text-yellow-700">Copy</button>
+                                            <button className="text-xs font-bold text-primary-600 hover:text-primary-700">Copy</button>
                                         </div>
                                     </div>
                                 </div>
@@ -404,8 +404,8 @@ export default function ManagerDashboard() {
                     onClick={() => setActiveTab('users')}
                     className="flex flex-col items-center justify-center w-20 py-1"
                 >
-                    <svg className={`w-5 h-5 mb-1 ${activeTab === 'users' ? 'text-yellow-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                    <span className={`text-[10px] font-bold ${activeTab === 'users' ? 'text-yellow-500' : 'text-gray-400'}`}>Users</span>
+                    <svg className={`w-5 h-5 mb-1 ${activeTab === 'users' ? 'text-primary-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    <span className={`text-[10px] font-bold ${activeTab === 'users' ? 'text-primary-500' : 'text-gray-400'}`}>Users</span>
                     <span className="text-[10px] text-gray-400 font-bold mt-0.5">{stats.users}</span>
                 </button>
                 
@@ -413,17 +413,17 @@ export default function ManagerDashboard() {
                     onClick={() => setActiveTab('properties')}
                     className="flex flex-col items-center justify-center w-20 py-1"
                 >
-                    <svg className={`w-5 h-5 mb-1 ${activeTab === 'properties' ? 'text-yellow-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-                    <span className={`text-[10px] font-bold ${activeTab === 'properties' ? 'text-yellow-500' : 'text-gray-400'}`}>Properties</span>
-                    <span className={`text-[10px] font-bold mt-0.5 ${activeTab === 'properties' ? 'bg-yellow-100 text-yellow-700 px-1.5 rounded-full' : 'text-gray-400'}`}>{stats.propertiesCount}</span>
+                    <svg className={`w-5 h-5 mb-1 ${activeTab === 'properties' ? 'text-primary-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                    <span className={`text-[10px] font-bold ${activeTab === 'properties' ? 'text-primary-500' : 'text-gray-400'}`}>Properties</span>
+                    <span className={`text-[10px] font-bold mt-0.5 ${activeTab === 'properties' ? 'bg-primary-100 text-primary-700 px-1.5 rounded-full' : 'text-gray-400'}`}>{stats.propertiesCount}</span>
                 </button>
                 
                 <button 
                     onClick={() => { setActiveTab('forms'); setSelectedSubmission(null); }}
                     className="flex flex-col items-center justify-center w-20 py-1"
                 >
-                    <svg className={`w-5 h-5 mb-1 ${activeTab === 'forms' ? 'text-yellow-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                    <span className={`text-[10px] font-bold ${activeTab === 'forms' ? 'text-yellow-500' : 'text-gray-400'}`}>Forms</span>
+                    <svg className={`w-5 h-5 mb-1 ${activeTab === 'forms' ? 'text-primary-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    <span className={`text-[10px] font-bold ${activeTab === 'forms' ? 'text-primary-500' : 'text-gray-400'}`}>Forms</span>
                     <span className="text-[10px] text-gray-400 font-bold mt-0.5">{stats.leads}</span>
                 </button>
             </div>

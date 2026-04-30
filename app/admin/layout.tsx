@@ -44,7 +44,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="font-extrabold text-gray-900 dark:text-white leading-none tracking-tight">Realprop Realty</span>
-                                    <span className="text-[10px] font-bold text-yellow-600 uppercase tracking-widest mt-0.5">Admin CMS</span>
+                                    <span className="text-[10px] font-bold text-primary-600 uppercase tracking-widest mt-0.5">Admin CMS</span>
                                 </div>
                             </Link>
 
@@ -55,7 +55,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                                         href={item.href}
                                         className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
                                             pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
-                                            ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300'
+                                            ? 'bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-300'
                                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700'
                                         }`}
                                     >
@@ -93,7 +93,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                             href={item.href}
                             className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors ${
                                 pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
-                                ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300'
+                                ? 'bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-300'
                                 : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
                             }`}
                         >

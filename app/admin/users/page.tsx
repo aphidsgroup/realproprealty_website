@@ -44,7 +44,7 @@ export default function AdminUsersPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
             </div>
         );
     }
@@ -63,7 +63,7 @@ export default function AdminUsersPage() {
                             placeholder="Search users..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 w-full md:w-64 transition-all"
+                            className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 w-full md:w-64 transition-all"
                         />
                         <svg className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -78,10 +78,10 @@ export default function AdminUsersPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredUsers.map((user) => (
                     <div key={user.id} className="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-50 rounded-bl-full -mr-12 -mt-12 transition-all group-hover:bg-yellow-100/50"></div>
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-primary-50 rounded-bl-full -mr-12 -mt-12 transition-all group-hover:bg-primary-100/50"></div>
                         
                         <div className="flex items-start justify-between mb-4 relative z-10">
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-yellow-100">
+                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary-100">
                                 {user.name ? user.name[0].toUpperCase() : '?'}
                             </div>
                             <div className="text-right">

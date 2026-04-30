@@ -62,7 +62,7 @@ export default function VerificationFormsPage() {
                     <p className="text-sm text-gray-500 mt-1">Manage forms and verify incoming requests.</p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="px-4 py-2 text-sm font-bold text-yellow-600 bg-yellow-50 rounded-xl border border-yellow-200">Submissions</button>
+                    <button className="px-4 py-2 text-sm font-bold text-primary-600 bg-primary-50 rounded-xl border border-primary-200">Submissions</button>
                     <button className="px-4 py-2 text-sm font-bold text-gray-500 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">Manage Forms</button>
                     <button className="px-4 py-2 text-sm font-bold text-gray-500 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">Back</button>
                 </div>
@@ -83,7 +83,7 @@ export default function VerificationFormsPage() {
                                 <div 
                                     key={sub.id} 
                                     onClick={() => setSelectedSub(sub)}
-                                    className={`p-4 rounded-xl cursor-pointer border-2 transition-all ${selectedSub?.id === sub.id ? 'bg-yellow-50 border-yellow-400' : 'bg-white border-transparent hover:border-gray-200 shadow-sm'}`}
+                                    className={`p-4 rounded-xl cursor-pointer border-2 transition-all ${selectedSub?.id === sub.id ? 'bg-primary-50 border-primary-400' : 'bg-white border-transparent hover:border-gray-200 shadow-sm'}`}
                                 >
                                     <div className="flex justify-between items-center mb-2">
                                         <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ${sub.formType === 'buyer' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
