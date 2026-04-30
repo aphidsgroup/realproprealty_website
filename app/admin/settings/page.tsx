@@ -50,10 +50,12 @@ export default function SettingsPage() {
         try {
             const res = await fetch('/api/admin/settings');
             const data = await res.json();
-            setFormData({
-                ...data,
-                amenitiesVocabulary: JSON.parse(data.amenitiesVocabulary),
-            });
+            if (data && !data.error) {
+                setFormData({
+                    ...data,
+                    amenitiesVocabulary: data.amenitiesVocabulary ? JSON.parse(data.amenitiesVocabulary) : [],
+                });
+            }
         } catch (error) {
             console.error('Error fetching settings:', error);
         } finally {
@@ -65,9 +67,10 @@ export default function SettingsPage() {
         try {
             const res = await fetch('/api/admin/managers');
             const data = await res.json();
-            setManagers(data || []);
+            setManagers(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching managers:', error);
+            setManagers([]);
         }
     };
 

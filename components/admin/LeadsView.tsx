@@ -96,9 +96,12 @@ export default function LeadsView({ type }: { type: 'seller' | 'buyer' }) {
                                 Import Sheet
                             </button>
                         </div>
-                        <button className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-8 py-2 rounded-xl text-sm font-bold transition-colors w-full justify-center">
+                        <Link 
+                            href={type === 'buyer' ? '/forms/buyer' : '/forms/seller'}
+                            className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-8 py-2 rounded-xl text-sm font-bold transition-colors w-full justify-center"
+                        >
                             + Add Lead
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
