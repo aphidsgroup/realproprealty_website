@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
-import { isAuthenticated } from '@/lib/auth';
+import { isAuthenticated, getSession } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
@@ -68,7 +68,8 @@ export async function PUT(
     request: Request,
     context: { params: Promise<{ id: string }> }
 ) {
-    if (!(await isAuthenticated())) {
+    const session = await getSession();
+    if (!session.isLoggedIn || (session.role !== 'admin' && session.role !== 'manager')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -77,7 +78,28 @@ export async function PUT(
         const body = await request.json();
         const data = sanitizePropertyData(body);
 
-        const property = await prisma.property.update({
+        const property = await prisma.property.findUnique({ where: { id } });
+        if (!property) return NextResponse.json({ error: 'Property not found' }, { status: 404 });
+
+        if (session.role === 'manager') {
+            // Intercept and create ChangeRequest
+            await prisma.changeRequest.create({
+                data: {
+                    type: 'edit_property',
+                    entityType: 'property',
+                    entityId: id,
+                    entityTitle: property.title,
+                    changes: JSON.stringify(data),
+                    reason: body.reason || 'Requested by manager via dashboard',
+                    requestedBy: session.userId,
+                    status: 'pending'
+                }
+            });
+            return NextResponse.json({ success: true, pendingApproval: true, message: 'Change request submitted for admin approval.' });
+        }
+
+        // Admin proceeds directly
+        const updatedProperty = await prisma.property.update({
             where: { id },
             data,
         });
@@ -85,9 +107,9 @@ export async function PUT(
         // Instant cache invalidation
         revalidatePath('/');
         revalidatePath('/list');
-        revalidatePath(`/p/${property.slug}`);
+        revalidatePath(`/p/${updatedProperty.slug}`);
 
-        return NextResponse.json(property);
+        return NextResponse.json(updatedProperty);
     } catch (error) {
         console.error('Error updating property:', error);
         const msg = error instanceof Error ? error.message : String(error);
@@ -99,13 +121,33 @@ export async function DELETE(
     request: Request,
     context: { params: Promise<{ id: string }> }
 ) {
-    if (!(await isAuthenticated())) {
+    const session = await getSession();
+    if (!session.isLoggedIn || (session.role !== 'admin' && session.role !== 'manager')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     try {
         const { id } = await context.params;
         const property = await prisma.property.findUnique({ where: { id } });
+        if (!property) return NextResponse.json({ error: 'Property not found' }, { status: 404 });
+
+        if (session.role === 'manager') {
+            // Intercept and create ChangeRequest
+            await prisma.changeRequest.create({
+                data: {
+                    type: 'delete_property',
+                    entityType: 'property',
+                    entityId: id,
+                    entityTitle: property.title,
+                    changes: JSON.stringify({ deleted: true }),
+                    reason: 'Requested by manager via dashboard',
+                    requestedBy: session.userId,
+                    status: 'pending'
+                }
+            });
+            return NextResponse.json({ success: true, pendingApproval: true, message: 'Deletion request submitted for admin approval.' });
+        }
+
         await prisma.property.delete({ where: { id } });
 
         // Instant cache invalidation
