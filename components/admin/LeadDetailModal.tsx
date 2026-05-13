@@ -3,10 +3,21 @@ import { useState } from 'react';
 export default function LeadDetailModal({ lead, onClose, onUpdateStatus, onDelete }: any) {
     if (!lead) return null;
 
-    // Parse the stored JSON payload
     let details: any = {};
     try {
         details = JSON.parse(lead.message);
+        if (details.propertyDetails) {
+            try {
+                const pd = typeof details.propertyDetails === 'string' 
+                    ? JSON.parse(details.propertyDetails) 
+                    : details.propertyDetails;
+                // Merge pd into details and remove the raw propertyDetails string
+                details = { ...details, ...pd };
+                delete details.propertyDetails;
+            } catch (e) {
+                console.error("Failed to parse propertyDetails", e);
+            }
+        }
     } catch (e) {
         console.error("Failed to parse lead message JSON", e);
     }
@@ -98,7 +109,7 @@ export default function LeadDetailModal({ lead, onClose, onUpdateStatus, onDelet
                                 </div>
                                 <div>
                                     <p className="text-[10px] uppercase font-extrabold tracking-widest text-gray-400 mb-1">{isSeller ? 'PROPERTY TYPE' : 'BHK / TYPE'}</p>
-                                    <p className="text-sm font-bold text-gray-900">{isSeller ? (details.propertyType || 'N/A') : (details.bhk ? `${details.bhk} ${details.propertyType || ''}` : 'N/A')}</p>
+                                    <p className="text-sm font-bold text-gray-900">{isSeller ? (details.propertyType || 'N/A') : (details.bhk ? `${Array.isArray(details.bhk) ? details.bhk.join(', ') : details.bhk} ${details.propertyType || ''}` : (details.propertyType || 'N/A'))}</p>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +142,7 @@ export default function LeadDetailModal({ lead, onClose, onUpdateStatus, onDelet
                                     return (
                                         <div key={key} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                                             <p className="text-[10px] uppercase font-extrabold tracking-widest text-gray-400 mb-1">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                                            <p className="text-sm font-bold text-gray-900">{String(value)}</p>
+                                            <p className="text-sm font-bold text-gray-900">{Array.isArray(value) ? value.join(', ') : String(value)}</p>
                                         </div>
                                     );
                                 })}

@@ -171,12 +171,39 @@ export default function VerificationFormsPage() {
                                                 <p className="text-[10px] uppercase font-extrabold tracking-widest text-gray-400 mb-1">PROPERTY TYPE</p>
                                                 <p className="text-sm font-bold text-gray-900">{selectedSub.propertyType || '—'}</p>
                                             </div>
+                                            {(() => {
+                                                let pd: any = {};
+                                                try {
+                                                    pd = typeof selectedSub.propertyDetails === 'string' 
+                                                        ? JSON.parse(selectedSub.propertyDetails) 
+                                                        : (selectedSub.propertyDetails || {});
+                                                } catch(e) {}
+                                                
+                                                return (
+                                                    <>
+                                                        {(selectedSub.bhk || pd.bhk) && (!['Plot / Land', 'Commercial Space'].includes(selectedSub.propertyType)) && (
+                                                            <div>
+                                                                <p className="text-[10px] uppercase font-extrabold tracking-widest text-gray-400 mb-1">BHK / CONFIGURATION</p>
+                                                                <p className="text-sm font-bold text-gray-900">{Array.isArray(pd.bhk) ? pd.bhk.join(', ') : (pd.bhk || selectedSub.bhk)}</p>
+                                                            </div>
+                                                        )}
+                                                        {(pd.purpose || pd.saleType) && (
+                                                            <div>
+                                                                <p className="text-[10px] uppercase font-extrabold tracking-widest text-gray-400 mb-1">PURPOSE</p>
+                                                                <p className="text-sm font-bold text-gray-900">{pd.purpose || pd.saleType}</p>
+                                                            </div>
+                                                        )}
+                                                        {pd.furnishing && !['Plot / Land'].includes(selectedSub.propertyType) && (
+                                                            <div>
+                                                                <p className="text-[10px] uppercase font-extrabold tracking-widest text-gray-400 mb-1">FURNISHING</p>
+                                                                <p className="text-sm font-bold text-gray-900">{pd.furnishing}</p>
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                );
+                                            })()}
                                             <div>
-                                                <p className="text-[10px] uppercase font-extrabold tracking-widest text-gray-400 mb-1">BHK / BEDROOMS</p>
-                                                <p className="text-sm font-bold text-gray-900">{selectedSub.bhk || '—'}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-[10px] uppercase font-extrabold tracking-widest text-gray-400 mb-1">BUDGET RANGE</p>
+                                                <p className="text-[10px] uppercase font-extrabold tracking-widest text-gray-400 mb-1">BUDGET / PRICE</p>
                                                 <p className="text-sm font-bold text-gray-900">{selectedSub.budget || '—'}</p>
                                             </div>
                                         </div>

@@ -43,7 +43,7 @@ export async function POST(request: Request) {
                 areas,
                 timeline,
                 propertyAddress,
-                propertyDetails: propertyDetails ? JSON.stringify(propertyDetails) : null,
+                propertyDetails: typeof propertyDetails === 'object' ? JSON.stringify(propertyDetails) : propertyDetails,
                 status: 'pending'
             }
         });

@@ -140,8 +140,18 @@ export default function LeadsView({ type }: { type: 'seller' | 'buyer' }) {
                 ) : (
                     filteredLeads.map(lead => {
                         let details: any = {};
-                        try { details = JSON.parse(lead.message); } catch(e) {}
+                        try { 
+                            details = JSON.parse(lead.message); 
+                            if (details.propertyDetails) {
+                                try {
+                                    const pd = typeof details.propertyDetails === 'string' ? JSON.parse(details.propertyDetails) : details.propertyDetails;
+                                    details = { ...details, ...pd };
+                                } catch(e) {}
+                            }
+                        } catch(e) {}
                         
+                        // Handle array formats (like buyer bhk which is an array of strings)
+                        const displayBhk = Array.isArray(details.bhk) ? details.bhk.join(', ') : details.bhk;
                         // Parse status for color
                         const statusObj = statuses.find(s => s.id === lead.status) || statuses[1];
                         
@@ -191,7 +201,7 @@ export default function LeadsView({ type }: { type: 'seller' | 'buyer' }) {
                                         <>
                                             <div>
                                                 <p className="text-[10px] uppercase font-extrabold tracking-widest text-gray-400 mb-1">REQUIREMENT</p>
-                                                <p className="text-sm font-bold text-gray-900">{details.bhk ? `${details.bhk} ${details.propertyType || ''}` : 'N/A'}</p>
+                                                <p className="text-sm font-bold text-gray-900">{displayBhk ? `${displayBhk} ${details.propertyType || ''}` : (details.propertyType || 'N/A')}</p>
                                             </div>
                                             <div>
                                                 <p className="text-[10px] uppercase font-extrabold tracking-widest text-gray-400 mb-1">BUDGET</p>
