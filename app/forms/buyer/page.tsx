@@ -3,46 +3,86 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
+const TOTAL_STEPS = 5;
+
+const inputCls = "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm font-medium text-gray-800 placeholder-gray-400 transition-all";
+const labelCls = "block text-sm font-bold text-gray-700 mb-2";
+const radioCardCls = (active: boolean) =>
+    `flex items-center gap-3 w-full px-4 py-3 rounded-xl border-2 cursor-pointer transition-all text-sm font-semibold ${active ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 bg-white text-gray-600 hover:border-primary-200'}`;
+const checkCardCls = (active: boolean) =>
+    `flex items-center gap-3 w-full px-4 py-3 rounded-xl border-2 cursor-pointer transition-all text-sm font-semibold ${active ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 bg-white text-gray-600 hover:border-primary-200'}`;
+
 export default function BuyerForm() {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [formData, setFormData] = useState({
-        name: '',
-        phone: '',
-        email: '',
-        optInWhatsapp: true,
-        buyerType: 'First-time buyer',
-        propertyType: 'Apartment',
-        bhk: '2 BHK',
-        budget: '50L - 75L',
-        areas: '',
-        timeline: 'Within 3 months'
-    });
 
-    const handleChange = (e: any) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
-    };
+    // Step 1 – Contact Info
+    const [buyerName, setBuyerName] = useState('');
+    const [whatsapp, setWhatsapp] = useState('');
+    const [email, setEmail] = useState('');
+    const [buyerType, setBuyerType] = useState(''); // First-time, Upgrading, Investor
 
-    const nextStep = () => setStep(s => s + 1);
-    const prevStep = () => setStep(s => s - 1);
+    // Step 2 – Property Requirements
+    const [purpose, setPurpose] = useState(''); // Self-use, Investment
+    const [propertyType, setPropertyType] = useState(''); // Apartment, Villa, Plot, Commercial
+    const [budget, setBudget] = useState('');
+    const [financing, setFinancing] = useState(''); // Pre-approved Loan, Need Loan, Self-funded
+
+    // Step 3 – Space & Configuration
+    const [bhk, setBhk] = useState<string[]>([]);
+    const [minSqft, setMinSqft] = useState('');
+    const [preferredFacing, setPreferredFacing] = useState<string[]>([]);
+    const [furnishing, setFurnishing] = useState('');
+
+    // Step 4 – Location & Lifestyle
+    const [preferredAreas, setPreferredAreas] = useState('');
+    const [timeline, setTimeline] = useState('');
+    const [mustHaveAmenities, setMustHaveAmenities] = useState<string[]>([]);
+
+    // Step 5 – Additional Details
+    const [additionalNotes, setAdditionalNotes] = useState('');
+    const [optInWhatsapp, setOptInWhatsapp] = useState(true);
+
+    const toggleBhk = (item: string) =>
+        setBhk(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]);
+    const toggleFacing = (item: string) =>
+        setPreferredFacing(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]);
+    const toggleAmenity = (item: string) =>
+        setMustHaveAmenities(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]);
+
+    const nextStep = () => setStep(s => Math.min(s + 1, TOTAL_STEPS));
+    const prevStep = () => setStep(s => Math.max(s - 1, 1));
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         try {
+            const payload = {
+                formType: 'buyer',
+                name: buyerName,
+                phone: whatsapp,
+                email,
+                optInWhatsapp,
+                buyerType,
+                propertyType,
+                budget,
+                areas: preferredAreas,
+                timeline,
+                propertyDetails: JSON.stringify({
+                    purpose, financing,
+                    bhk, minSqft, preferredFacing, furnishing,
+                    mustHaveAmenities, additionalNotes
+                })
+            };
             const res = await fetch('/api/forms/submit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...formData, formType: 'buyer' })
+                body: JSON.stringify(payload)
             });
             if (res.ok) setSubmitted(true);
-        } catch (error) {
-            console.error(error);
+            else throw new Error('Failed');
+        } catch {
             alert('Something went wrong. Please try again.');
         } finally {
             setLoading(false);
@@ -52,13 +92,13 @@ export default function BuyerForm() {
     if (submitted) {
         return (
             <div className="min-h-screen bg-[#fafafa] flex items-center justify-center p-4">
-                <div className="max-w-md w-full bg-white rounded-[2rem] p-8 text-center shadow-xl shadow-primary-100/50 border border-primary-50 animate-in fade-in zoom-in duration-500">
+                <div className="max-w-md w-full bg-white rounded-3xl p-10 text-center shadow-2xl border border-gray-100">
                     <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
                         <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Request Received!</h2>
-                    <p className="text-gray-500 text-sm mb-8">Thank you, {formData.name}. Our property advisor will contact you shortly with the best matches.</p>
-                    <Link href="/" className="inline-block px-8 py-3 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl transition-all">
+                    <h2 className="text-2xl font-extrabold text-gray-900 mb-2">Requirement Submitted!</h2>
+                    <p className="text-gray-500 text-sm mb-8">Thank you, <strong>{buyerName}</strong>. Our property advisor will review your requirements and share the best matching properties shortly.</p>
+                    <Link href="/" className="inline-block px-8 py-3 bg-gray-900 text-primary-500 font-bold rounded-xl transition-all hover:bg-black">
                         Back to Home
                     </Link>
                 </div>
@@ -67,133 +107,243 @@ export default function BuyerForm() {
     }
 
     return (
-        <div className="min-h-screen bg-[#fafafa] font-sans text-gray-900 py-12 px-4">
-            <div className="max-w-xl mx-auto">
-                {/* Header */}
-                <div className="text-center mb-10">
-                    <div className="inline-flex items-center gap-2 mb-4">
-                        <div className="w-10 h-10 relative">
-                            <img src="/logo.png" alt="Realprop Realty" className="w-full h-full object-contain" />
-                        </div>
-                        <span className="font-bold text-xl tracking-tight">Realprop Realty</span>
+        <div className="min-h-screen bg-[#f5f5f7] font-sans py-8 px-4">
+            <div className="max-w-lg mx-auto">
+                {/* Logo Header */}
+                <div className="flex items-center gap-2 mb-6">
+                    <img src="/logo.png" alt="Realprop Realty" className="w-9 h-9 object-contain" />
+                    <div>
+                        <div className="font-extrabold text-gray-900 text-[15px] leading-none">Realprop Realty</div>
+                        <div className="text-[9px] font-bold text-primary-600 uppercase tracking-widest">Buyer Requirements</div>
                     </div>
-                    <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Buyer Requirement Form</h1>
-                    <p className="text-gray-500 text-sm">Tell us what you're looking for, and we'll find your dream home.</p>
                 </div>
 
-                {/* Step Indicator */}
-                <div className="flex justify-between items-center mb-8 px-2">
-                    {[1, 2, 3].map((s) => (
-                        <div key={s} className="flex items-center flex-1 last:flex-none">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${step >= s ? 'bg-primary-500 text-white shadow-md' : 'bg-gray-200 text-gray-400'}`}>
-                                {s}
-                            </div>
-                            {s < 3 && <div className={`flex-1 h-1 mx-2 rounded-full transition-all duration-500 ${step > s ? 'bg-primary-500' : 'bg-gray-200'}`}></div>}
-                        </div>
+                {/* Title */}
+                <h1 className="text-2xl font-extrabold text-gray-900 mb-1">Find Your Perfect Property</h1>
+
+                {/* Progress Bar */}
+                <div className="flex gap-1.5 mb-6">
+                    {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+                        <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${i < step ? 'bg-primary-500' : 'bg-gray-200'}`} />
                     ))}
                 </div>
 
-                <form onSubmit={handleSubmit} className="bg-white rounded-[2rem] p-8 shadow-xl shadow-primary-100/20 border border-gray-50 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1.5 bg-primary-500 opacity-10"></div>
-                    
-                    {step === 1 && (
-                        <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                            <h2 className="text-xl font-bold text-gray-900 mb-6">Contact Information</h2>
-                            <div>
-                                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-1 ml-1">Full Name</label>
-                                <input required type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Enter your full name" className="w-full px-4 py-3.5 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary-500 transition-all text-sm font-medium" />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-1 ml-1">Phone Number</label>
-                                <input required type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Enter mobile number" className="w-full px-4 py-3.5 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary-500 transition-all text-sm font-medium" />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-1 ml-1">Email Address (Optional)</label>
-                                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="email@example.com" className="w-full px-4 py-3.5 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary-500 transition-all text-sm font-medium" />
-                            </div>
-                            <div className="flex items-center gap-3 bg-green-50 p-4 rounded-xl border border-green-100">
-                                <input type="checkbox" name="optInWhatsapp" checked={formData.optInWhatsapp} onChange={handleChange} className="w-5 h-5 text-green-500 rounded border-green-200 focus:ring-green-500" />
-                                <span className="text-xs font-bold text-green-700">Receive property updates on WhatsApp</span>
-                            </div>
-                            <button type="button" onClick={nextStep} className="w-full py-4 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl shadow-lg shadow-primary-100 transition-all mt-4">
-                                Next: Property Details
-                            </button>
-                        </div>
-                    )}
+                <form onSubmit={handleSubmit}>
+                    <div className="bg-white rounded-2xl shadow-md p-6 space-y-5">
 
-                    {step === 2 && (
-                        <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                            <h2 className="text-xl font-bold text-gray-900 mb-6">Property Requirements</h2>
-                            <div className="grid grid-cols-2 gap-4">
+                        {/* ── STEP 1: Contact Info ── */}
+                        {step === 1 && (
+                            <div className="space-y-5">
                                 <div>
-                                    <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 ml-1">Buyer Type</label>
-                                    <select name="buyerType" value={formData.buyerType} onChange={handleChange} className="w-full px-4 py-3.5 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary-500 text-sm font-bold">
-                                        <option>First-time buyer</option>
-                                        <option>Investor</option>
-                                        <option>Upgrading home</option>
-                                    </select>
+                                    <label className={labelCls}>Full Name <span className="text-red-500">*</span></label>
+                                    <input required value={buyerName} onChange={e => setBuyerName(e.target.value)} placeholder="Enter your full name" className={inputCls} />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 ml-1">Property Type</label>
-                                    <select name="propertyType" value={formData.propertyType} onChange={handleChange} className="w-full px-4 py-3.5 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary-500 text-sm font-bold">
-                                        <option>Apartment</option>
-                                        <option>Villa / House</option>
-                                        <option>Plot / Land</option>
-                                        <option>Commercial</option>
-                                    </select>
+                                    <label className={labelCls}>WhatsApp Number <span className="text-red-500">*</span></label>
+                                    <input required type="tel" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="10-digit WhatsApp number" maxLength={10} className={inputCls} />
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Email Address <span className="text-red-500">*</span></label>
+                                    <input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Enter your email" className={inputCls} />
+                                </div>
+                                <div>
+                                    <label className={labelCls}>I am a... <span className="text-red-500">*</span></label>
+                                    <div className="space-y-2">
+                                        {['First-time Buyer', 'Upgrading Home', 'Investor'].map(t => (
+                                            <label key={t} className={radioCardCls(buyerType === t)}>
+                                                <input type="radio" name="buyerType" value={t} checked={buyerType === t} onChange={() => setBuyerType(t)} className="accent-primary-500" />
+                                                {t}
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                            <div>
-                                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 ml-1">Bedrooms (BHK)</label>
-                                <div className="grid grid-cols-4 gap-2">
-                                    {['1 BHK', '2 BHK', '3 BHK', '4+ BHK'].map(opt => (
-                                        <button key={opt} type="button" onClick={() => setFormData({...formData, bhk: opt})} className={`py-3 text-xs font-bold rounded-xl transition-all border ${formData.bhk === opt ? 'bg-primary-500 text-white border-primary-500 shadow-md' : 'bg-gray-50 text-gray-500 border-transparent hover:bg-gray-100'}`}>
-                                            {opt}
-                                        </button>
+                        )}
+
+                        {/* ── STEP 2: Property Requirements ── */}
+                        {step === 2 && (
+                            <div className="space-y-5">
+                                <div>
+                                    <label className={labelCls}>Purpose of Buying <span className="text-red-500">*</span></label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {['Self-use', 'Investment'].map(t => (
+                                            <label key={t} className={radioCardCls(purpose === t)}>
+                                                <input type="radio" name="purpose" value={t} checked={purpose === t} onChange={() => setPurpose(t)} className="accent-primary-500" />
+                                                {t}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Property Type <span className="text-red-500">*</span></label>
+                                    <div className="space-y-2">
+                                        {['Apartment', 'Villa / Independent House', 'Plot / Land', 'Commercial Space'].map(t => (
+                                            <label key={t} className={radioCardCls(propertyType === t)}>
+                                                <input type="radio" name="propType" value={t} checked={propertyType === t} onChange={() => setPropertyType(t)} className="accent-primary-500" />
+                                                {t}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Budget Range <span className="text-red-500">*</span></label>
+                                    <select required value={budget} onChange={e => setBudget(e.target.value)} className={inputCls}>
+                                        <option value="" disabled>Select a budget range</option>
+                                        <option>Under 50 Lakhs</option>
+                                        <option>50 Lakhs - 75 Lakhs</option>
+                                        <option>75 Lakhs - 1 Crore</option>
+                                        <option>1 Crore - 2 Crores</option>
+                                        <option>2 Crores - 5 Crores</option>
+                                        <option>Above 5 Crores</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Financing Plan</label>
+                                    <div className="space-y-2">
+                                        {['Pre-approved Loan', 'Will Need a Loan', 'Self-funded / Cash Buyer'].map(f => (
+                                            <label key={f} className={radioCardCls(financing === f)}>
+                                                <input type="radio" name="financing" value={f} checked={financing === f} onChange={() => setFinancing(f)} className="accent-primary-500" />
+                                                {f}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ── STEP 3: Space & Configuration ── */}
+                        {step === 3 && (
+                            <div className="space-y-5">
+                                <div>
+                                    <label className={labelCls}>Preferred Configuration (BHK)</label>
+                                    <p className="text-xs text-gray-500 mb-2">You can select multiple options.</p>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {['1 BHK', '2 BHK', '3 BHK', '4+ BHK'].map(b => (
+                                            <button key={b} type="button" onClick={() => toggleBhk(b)} className={`py-3 text-xs font-bold rounded-xl border-2 transition-all ${bhk.includes(b) ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-500 hover:border-primary-200'}`}>{b}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Minimum Size (Sq. ft.)</label>
+                                    <input type="number" value={minSqft} onChange={e => setMinSqft(e.target.value)} placeholder="e.g. 1000" className={inputCls} />
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Preferred Facing</label>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {['North', 'South', 'East', 'West', 'Any'].map(d => (
+                                            <button key={d} type="button" onClick={() => {
+                                                if(d === 'Any') {
+                                                    setPreferredFacing(['Any']);
+                                                } else {
+                                                    toggleFacing(d);
+                                                    setPreferredFacing(prev => prev.filter(p => p !== 'Any'));
+                                                }
+                                            }} className={`py-2.5 text-xs font-bold rounded-xl border-2 transition-all ${preferredFacing.includes(d) ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-500 hover:border-primary-200'}`}>{d}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Furnishing Preference</label>
+                                    <div className="space-y-2">
+                                        {['Fully Furnished', 'Semi-Furnished', 'Unfurnished', 'Does Not Matter'].map(f => (
+                                            <label key={f} className={radioCardCls(furnishing === f)}>
+                                                <input type="radio" name="furnish" value={f} checked={furnishing === f} onChange={() => setFurnishing(f)} className="accent-primary-500" />
+                                                {f}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ── STEP 4: Location & Lifestyle ── */}
+                        {step === 4 && (
+                            <div className="space-y-5">
+                                <div>
+                                    <label className={labelCls}>Preferred Areas in Chennai <span className="text-red-500">*</span></label>
+                                    <textarea required value={preferredAreas} onChange={e => setPreferredAreas(e.target.value)} placeholder="e.g. Adyar, OMR, Velachery, ECR..." rows={3} className={inputCls + ' resize-none'} />
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Timeline to Buy <span className="text-red-500">*</span></label>
+                                    <div className="space-y-2">
+                                        {['Immediate (0-1 months)', 'Short-term (1-3 months)', 'Medium-term (3-6 months)', 'Just exploring / Next year'].map(t => (
+                                            <label key={t} className={radioCardCls(timeline === t)}>
+                                                <input type="radio" name="timeline" value={t} checked={timeline === t} onChange={() => setTimeline(t)} className="accent-primary-500" />
+                                                {t}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Must-have Amenities</label>
+                                    <div className="space-y-2">
+                                        {[
+                                            'Gated Community', 'Covered Car Parking', 'Power Backup',
+                                            'Swimming Pool', 'Gym / Fitness Centre', 'Clubhouse',
+                                            'Security / CCTV', 'Near Metro Station', 'Vastu Compliant'
+                                        ].map(item => (
+                                            <label key={item} className={checkCardCls(mustHaveAmenities.includes(item))}>
+                                                <input type="checkbox" checked={mustHaveAmenities.includes(item)} onChange={() => toggleAmenity(item)} className="accent-primary-500 w-4 h-4 flex-shrink-0" />
+                                                {item}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ── STEP 5: Final Details & Submit ── */}
+                        {step === 5 && (
+                            <div className="space-y-5">
+                                <div>
+                                    <label className={labelCls}>Any Specific Requirements? (Optional)</label>
+                                    <textarea value={additionalNotes} onChange={e => setAdditionalNotes(e.target.value)} placeholder="e.g. Pet-friendly, strictly veg, near schools, corner apartment, ground floor only..." rows={4} className={inputCls + ' resize-none'} />
+                                </div>
+                                <div className="bg-green-50 border border-green-100 rounded-xl p-4 flex items-start gap-3">
+                                    <input type="checkbox" id="waCb" checked={optInWhatsapp} onChange={e => setOptInWhatsapp(e.target.checked)} className="w-5 h-5 accent-green-500 mt-0.5 flex-shrink-0" />
+                                    <label htmlFor="waCb" className="text-sm text-green-800 font-medium cursor-pointer">
+                                        Send me matching properties and updates on WhatsApp
+                                    </label>
+                                </div>
+                                {/* Summary */}
+                                <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 text-sm">
+                                    <p className="font-bold text-gray-700 mb-2">Review Your Preferences</p>
+                                    {[
+                                        ['Name', buyerName], ['WhatsApp', whatsapp], ['Email', email],
+                                        ['Looking for', propertyType], ['Budget', budget],
+                                        ['Areas', preferredAreas ? preferredAreas : '—'],
+                                        ['Timeline', timeline || '—'],
+                                        ['BHK', bhk.length ? bhk.join(', ') : '—'],
+                                    ].map(([k, v]) => (
+                                        <div key={k} className="flex justify-between">
+                                            <span className="text-gray-500">{k}</span>
+                                            <span className="font-semibold text-gray-800 text-right max-w-[55%] truncate">{v}</span>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
-                            <div>
-                                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 ml-1">Budget Range</label>
-                                <select name="budget" value={formData.budget} onChange={handleChange} className="w-full px-4 py-3.5 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary-500 text-sm font-bold">
-                                    <option>Under 50L</option>
-                                    <option>50L - 75L</option>
-                                    <option>75L - 1Cr</option>
-                                    <option>1Cr - 2Cr</option>
-                                    <option>Above 2Cr</option>
-                                </select>
-                            </div>
-                            <div className="flex gap-3 mt-8">
-                                <button type="button" onClick={prevStep} className="flex-1 py-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-xl transition-all">Back</button>
-                                <button type="button" onClick={nextStep} className="flex-[2] py-4 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl shadow-lg shadow-primary-100 transition-all">Next: Final Step</button>
-                            </div>
-                        </div>
-                    )}
+                        )}
 
-                    {step === 3 && (
-                        <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                            <h2 className="text-xl font-bold text-gray-900 mb-6">Preferences</h2>
-                            <div>
-                                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-1 ml-1">Preferred Areas in Chennai</label>
-                                <textarea required name="areas" value={formData.areas} onChange={handleChange} placeholder="e.g., OMR, ECR, Velachery, Adyar" rows={3} className="w-full px-4 py-3.5 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary-500 transition-all text-sm font-medium resize-none" />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2 ml-1">Timeline to Buy</label>
-                                <select name="timeline" value={formData.timeline} onChange={handleChange} className="w-full px-4 py-3.5 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary-500 text-sm font-bold">
-                                    <option>Immediate</option>
-                                    <option>Within 3 months</option>
-                                    <option>3-6 months</option>
-                                    <option>Planning for next year</option>
-                                </select>
-                            </div>
-                            <div className="flex gap-3 mt-8">
-                                <button type="button" onClick={prevStep} className="flex-1 py-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-xl transition-all">Back</button>
-                                <button type="submit" disabled={loading} className="flex-[2] py-4 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl shadow-lg shadow-primary-100 transition-all flex items-center justify-center gap-2">
-                                    {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : 'Submit Requirement'}
+                        {/* Navigation Buttons */}
+                        <div className="flex gap-3 pt-2">
+                            {step > 1 && (
+                                <button type="button" onClick={prevStep} className="flex-1 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-all text-sm">
+                                    Back
                                 </button>
-                            </div>
+                            )}
+                            {step < TOTAL_STEPS ? (
+                                <button type="button" onClick={nextStep} className="flex-[2] py-3.5 bg-gray-900 hover:bg-black text-primary-500 font-bold rounded-xl transition-all text-sm shadow-lg">
+                                    Next
+                                </button>
+                            ) : (
+                                <button type="submit" disabled={loading} className="flex-[2] py-3.5 bg-gray-900 hover:bg-black disabled:bg-gray-500 text-primary-500 font-bold rounded-xl transition-all text-sm shadow-lg flex items-center justify-center gap-2">
+                                    {loading ? <div className="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" /> : 'Find Properties'}
+                                </button>
+                            )}
                         </div>
-                    )}
+
+                    </div>
+                    <p className="text-center text-xs text-gray-400 mt-4">Step {step} of {TOTAL_STEPS} • Realprop Realty</p>
                 </form>
             </div>
         </div>
