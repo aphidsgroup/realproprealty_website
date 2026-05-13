@@ -12,6 +12,7 @@ import ViewAllButton from '@/components/ViewAllButton';
 import SiteHeader from '@/components/SiteHeader';
 import FloatingShortlistButton from '@/components/FloatingShortlistButton';
 import PropertyStatsBar from '@/components/PropertyStatsBar';
+import PropertyShortlistButton from '@/components/PropertyShortlistButton';
 
 // ISR: Cache page at edge, revalidate every 60 seconds
 export const revalidate = 60;
@@ -646,8 +647,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 )}
             </div>
 
-            {/* Floating Shortlist */}
-            <FloatingShortlistButton />
+            {/* Property Shortlist Toggle */}
+            <PropertyShortlistButton propertyId={property.id} />
 
             {/* Contact Bar */}
             <ContactBar
