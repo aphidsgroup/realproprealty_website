@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import { getSession } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { formatPrice, formatSize, parseFacilities, parseLocationAdvantages, buildWhatsAppUrl } from '@/lib/utils';
 import ContactBar from '@/components/ContactBar';
@@ -68,7 +69,13 @@ async function getRelatedProperties(currentPropertyId: string, usageType: string
 }
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
+    const session = await getSession();
     const { slug } = await params;
+
+    if (!session.isLoggedIn) {
+        redirect(`/signup?next=/p/${slug}`);
+    }
+
     const [property, settings] = await Promise.all([
         getProperty(slug),
         getSiteSettings(),
