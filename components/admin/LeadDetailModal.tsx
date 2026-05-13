@@ -23,7 +23,7 @@ export default function LeadDetailModal({ lead, onClose, onUpdateStatus, onDelet
     }
 
     const isSeller = lead.leadType === 'seller';
-    const title = isSeller ? (details.propertyType || 'Property Sale Lead') : lead.name;
+    const title = lead.name;
 
     // Contact pills
     const contactLinks = (

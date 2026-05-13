@@ -178,7 +178,7 @@ export default function LeadsView({ type }: { type: 'seller' | 'buyer' }) {
                                     </span>
                                 </div>
 
-                                <h3 className="text-xl font-bold text-gray-900 mb-1">{type === 'seller' ? (details.propertyType || lead.name) : lead.name}</h3>
+                                <h3 className="text-xl font-bold text-gray-900 mb-1">{lead.name}</h3>
                                 <p className="text-gray-500 text-sm font-medium mb-6">{lead.phone}</p>
 
                                 <div className="grid grid-cols-3 gap-4 border-t border-gray-100 pt-4">
