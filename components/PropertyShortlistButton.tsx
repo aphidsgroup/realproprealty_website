@@ -66,20 +66,20 @@ export default function PropertyShortlistButton({ propertyId }: PropertyShortlis
         <button
             onClick={handleToggle}
             disabled={loading}
-            className={`fixed bottom-[88px] right-4 z-30 flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)] transition-all duration-300 ${loading ? 'opacity-70 cursor-wait' : 'cursor-pointer'} animate-in slide-in-from-bottom-4`}
+            className={`fixed bottom-[80px] right-4 z-30 flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] transition-all duration-300 ${loading ? 'opacity-70 cursor-wait' : 'cursor-pointer'} animate-in slide-in-from-bottom-4`}
         >
             <div className={`transition-transform duration-300 ${isShortlisted ? 'scale-125' : 'scale-100'}`}>
                 {isShortlisted ? (
-                    <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                     </svg>
                 ) : (
-                    <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                 )}
             </div>
-            <span className="text-sm font-bold text-gray-700 dark:text-gray-200">
+            <span className="text-base font-bold text-gray-700 dark:text-gray-200">
                 {isShortlisted ? 'Shortlisted' : 'Shortlist'}
             </span>
         </button>
