@@ -19,7 +19,7 @@ async function getStats() {
             prisma.property.count({ where: { isPublished: true } }),
             prisma.property.count({ where: { usageType: 'residential', isPublished: true } }),
             prisma.property.count({ where: { usageType: 'commercial', isPublished: true } }),
-            prisma.lead.count(),
+            prisma.onboardingSubmission.count(),
             prisma.onboardingSubmission.count({ where: { status: 'pending' } })
         ]);
         return { totalProperties, publishedProperties, residentialProperties, commercialProperties, totalLeads, pendingSubmissions };
