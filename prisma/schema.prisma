@@ -61,13 +61,8 @@ model Property {
   locationAdvantages String? // JSON array of location objects with name, category, distance
   constructionStatus String? // Construction status: "Under Construction", "Ready to Move", "Upcoming"
   isNegotiable    Boolean  @default(false)
-  isVerified      Boolean  @default(false)
-  isBachelorFriendly Boolean @default(false)
-  isPetFriendly   Boolean  @default(false)
-  isVegOnly       Boolean  @default(false)
   isPublished     Boolean  @default(false)
   isFeatured      Boolean  @default(false)
-  isSold          Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   shortlists      Shortlist[]
@@ -118,57 +113,5 @@ model SiteSettings {
   heroSubtitle         String?  // Editable hero subtitle
   aboutContent         String?  // CMS: About page content
   contactContent       String?  // CMS: Contact page content
-  footerText           String?  // CMS: Footer text
-  contentSections      String?  // JSON array defining section order for property detail page
   updatedAt            DateTime @updatedAt
-}
-
-model OnboardingSubmission {
-  id              String   @id @default(cuid())
-  formType        String   // "buyer" or "seller"
-  status          String   @default("pending") // "pending", "verified", "rejected"
-  name            String
-  phone           String
-  email           String?
-  optInWhatsapp   Boolean  @default(false)
-  buyerType       String?  // e.g. "First-time buyer", "Investor"
-  sellerType      String?  // e.g. "Owner", "Agent"
-  propertyType    String?
-  bhk             String?
-  budget          String?
-  areas           String?
-  timeline        String?
-  propertyAddress String?
-  propertyDetails String?  // JSON payload of all the custom details for seller
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-}
-
-model Lead {
-  id              String   @id @default(cuid())
-  leadType        String   // "buyer" or "seller"
-  source          String   @default("onboarding_form")
-  status          String   @default("new") // "new", "contacted", "closed"
-  name            String
-  phone           String
-  email           String?
-  message         String   @db.Text // Full JSON payload from submission
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-}
-
-model ChangeRequest {
-  id            String   @id @default(cuid())
-  type          String   // "edit_property", "delete_property", etc.
-  entityType    String   // "property" or "lead"
-  entityId      String
-  entityTitle   String
-  changes       String   @db.Text // JSON string of exact proposed modifications
-  reason        String   @db.Text
-  requestedBy   String   // Manager ID or Name
-  status        String   @default("pending") // "pending", "approved", "rejected"
-  reviewedBy    String?
-  reviewNote    String?  @db.Text
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
 }

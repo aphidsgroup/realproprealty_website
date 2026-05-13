@@ -7,7 +7,6 @@ export async function middleware(request: NextRequest) {
     // Allow public pages and API routes
     if (
         pathname === '/admin/login' ||
-        pathname === '/manager/login' ||
         pathname === '/login' ||
         pathname === '/signup' ||
         pathname.startsWith('/api/')
@@ -29,7 +28,7 @@ export async function middleware(request: NextRequest) {
     // Protect /manager routes
     if (pathname.startsWith('/manager')) {
         if (!sessionCookie?.value) {
-            return NextResponse.redirect(new URL('/manager/login', request.url));
+            return NextResponse.redirect(new URL('/admin/login', request.url));
         }
         return NextResponse.next();
     }

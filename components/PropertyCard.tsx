@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { Property } from '@prisma/client';
 import { formatPrice, formatSize, parseAmenities } from '@/lib/utils';
 import ShortlistButton from './ShortlistButton';
-import VerifiedBadge from './VerifiedBadge';
 
 interface PropertyCardProps {
     property: Property;
@@ -33,29 +32,14 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                     <div className="absolute top-3 right-3 z-10">
                         <ShortlistButton propertyId={property.id} size="sm" />
                     </div>
+                    {/* Negotiable Badge */}
                     {property.isNegotiable && (
-                        <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
+                        <div className="absolute top-3 left-3 z-10">
                             <span className="px-2.5 py-1 bg-green-500 text-white text-xs font-bold rounded-full shadow-md">
                                 Negotiable
                             </span>
                         </div>
                     )}
-                    {/* Verified Badge */}
-                    {property.isVerified && (
-                        <div className={`absolute ${property.isNegotiable ? 'top-12' : 'top-3'} left-3 z-10`}>
-                            <VerifiedBadge size="sm" />
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* Sold Overlay */}
-            {property.isSold && (
-                <div className="absolute inset-0 bg-black/50 z-20 flex items-center justify-center pointer-events-none">
-                    <div className="px-6 py-2 bg-orange-600 text-white text-xl font-black rounded-lg transform -rotate-12 border-4 border-white shadow-2xl tracking-widest uppercase flex flex-col items-center">
-                        <span>SOLD OUT</span>
-                        <span className="text-[10px] tracking-normal opacity-90 mt-1">Booked on Realprop</span>
-                    </div>
                 </div>
             )}
 
@@ -116,21 +100,6 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                             <span className="px-2.5 py-1 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs rounded-lg">
                                 +{amenities.length - 4} more
                             </span>
-                        )}
-                    </div>
-                )}
-
-                {/* Lifestyle Badges */}
-                {(property.isBachelorFriendly || property.isPetFriendly || property.isVegOnly) && (
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                        {property.isBachelorFriendly && (
-                            <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-[10px] font-bold rounded-full">🎓 Bachelor Friendly</span>
-                        )}
-                        {property.isPetFriendly && (
-                            <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-bold rounded-full">🐾 Pet Friendly</span>
-                        )}
-                        {property.isVegOnly && (
-                            <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold rounded-full">🥬 Veg Only</span>
                         )}
                     </div>
                 )}
