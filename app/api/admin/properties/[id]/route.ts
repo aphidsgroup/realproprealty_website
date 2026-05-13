@@ -29,6 +29,7 @@ function sanitizePropertyData(body: any) {
     if (body.floorPlans !== undefined) data.floorPlans = typeof body.floorPlans === 'string' ? body.floorPlans : JSON.stringify(body.floorPlans || []);
     if (body.isPublished !== undefined) data.isPublished = Boolean(body.isPublished);
     if (body.isFeatured !== undefined) data.isFeatured = Boolean(body.isFeatured);
+    if (body.isSold !== undefined) data.isSold = Boolean(body.isSold);
     if (body.slug !== undefined) data.slug = body.slug;
 
     return data;

@@ -60,6 +60,19 @@ export default function PropertiesListPage() {
         }
     };
 
+    const toggleSold = async (property: Property) => {
+        try {
+            await fetch(`/api/admin/properties/${property.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...property, isSold: !property.isSold }),
+            });
+            fetchProperties(search);
+        } catch (error) {
+            console.error('Error toggling sold status:', error);
+        }
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex items-center justify-between mb-8">
@@ -160,15 +173,26 @@ export default function PropertiesListPage() {
                                             {formatPrice(property.priceInr)}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <button
-                                                onClick={() => togglePublish(property)}
-                                                className={`px-3 py-1 text-xs font-semibold rounded-full ${property.isPublished
-                                                    ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
-                                                    : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'
-                                                    }`}
-                                            >
-                                                {property.isPublished ? 'Published' : 'Draft'}
-                                            </button>
+                                            <div className="flex flex-col gap-2">
+                                                <button
+                                                    onClick={() => togglePublish(property)}
+                                                    className={`px-3 py-1 text-xs font-semibold rounded-full w-max ${property.isPublished
+                                                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
+                                                        : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'
+                                                        }`}
+                                                >
+                                                    {property.isPublished ? 'Published' : 'Draft'}
+                                                </button>
+                                                <button
+                                                    onClick={() => toggleSold(property)}
+                                                    className={`px-3 py-1 text-xs font-semibold rounded-full w-max ${property.isSold
+                                                        ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
+                                                        : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'
+                                                        }`}
+                                                >
+                                                    {property.isSold ? 'Sold Out' : 'Available'}
+                                                </button>
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
