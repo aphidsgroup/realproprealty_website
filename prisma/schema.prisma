@@ -173,3 +173,13 @@ model ChangeRequest {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+model CallbackRequest {
+  id            String   @id @default(cuid())
+  name          String
+  phone         String
+  propertyId    String
+  propertyTitle String
+  status        String   @default("pending") // pending, called, no_answer, rejected
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

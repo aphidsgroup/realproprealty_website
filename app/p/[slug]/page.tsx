@@ -13,6 +13,7 @@ import SiteHeader from '@/components/SiteHeader';
 import FloatingShortlistButton from '@/components/FloatingShortlistButton';
 import PropertyStatsBar from '@/components/PropertyStatsBar';
 import PropertyShortlistButton from '@/components/PropertyShortlistButton';
+import CallbackForm from '@/components/CallbackForm';
 
 // ISR: Cache page at edge, revalidate every 60 seconds
 export const revalidate = 60;
@@ -622,6 +623,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                         </div>
                     </div>
                 </div>
+
+                {/* Callback Form */}
+                <CallbackForm propertyId={property.id} propertyTitle={property.title} />
 
                 {/* Contact Info */}
                 <div className="bg-gradient-to-r from-primary-50 to-accent-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-6 text-center mb-8">

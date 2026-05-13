@@ -27,6 +27,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         { href: '/admin/users', label: 'Users' },
         { href: '/admin/managers', label: 'Managers' },
         { href: '/admin/change-requests', label: 'Approvals' },
+        { href: '/admin/callbacks', label: 'Callbacks' },
         { href: '/admin/verification-forms', label: 'Verification Forms' },
         { href: '/admin/settings', label: 'Settings' },
     ];
