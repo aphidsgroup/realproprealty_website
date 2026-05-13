@@ -84,6 +84,23 @@ export default function ManagerDashboard() {
         }
     };
 
+    const handleToggleSold = async (id: string, currentStatus: boolean) => {
+        try {
+            const res = await fetch(`/api/admin/properties/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isSold: !currentStatus })
+            });
+            if (res.ok) {
+                const statsRes = await fetch('/api/manager/stats');
+                const statsData = await statsRes.json();
+                setStats(statsData);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     if (loading) return (
         <div className="min-h-screen flex items-center justify-center bg-[#fafafa]">
             <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
@@ -302,6 +319,9 @@ export default function ManagerDashboard() {
                                         }`}>
                                             {prop.usageType === 'residential' ? 'Buy' : 'Sell'}
                                         </span>
+                                        {prop.isSold && (
+                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-700 border border-orange-200 uppercase">SOLD OUT</span>
+                                        )}
                                     </div>
 
                                     <h3 className="font-bold text-[15px] text-gray-900 pr-16 mb-1 truncate">{prop.title}</h3>
@@ -313,8 +333,11 @@ export default function ManagerDashboard() {
                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                             Edit
                                         </Link>
-                                        <button className="flex-1 text-center py-2 bg-orange-50 text-orange-600 text-xs font-bold rounded-lg border border-orange-100 hover:bg-orange-100 transition-colors">
-                                            Mark Sold
+                                        <button 
+                                            onClick={() => handleToggleSold(prop.id, prop.isSold)}
+                                            className={`flex-1 text-center py-2 text-xs font-bold rounded-lg border transition-colors ${prop.isSold ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100' : 'bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100'}`}
+                                        >
+                                            {prop.isSold ? 'Undo Sold' : 'Mark Sold'}
                                         </button>
                                         <button className="flex-1 text-center py-2 bg-red-50 text-red-600 text-xs font-bold rounded-lg border border-red-100 hover:bg-red-100 transition-colors">
                                             Delete

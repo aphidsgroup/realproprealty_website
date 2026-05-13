@@ -49,6 +49,16 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                 </div>
             )}
 
+            {/* Sold Overlay */}
+            {property.isSold && (
+                <div className="absolute inset-0 bg-black/50 z-20 flex items-center justify-center pointer-events-none">
+                    <div className="px-6 py-2 bg-orange-600 text-white text-xl font-black rounded-lg transform -rotate-12 border-4 border-white shadow-2xl tracking-widest uppercase flex flex-col items-center">
+                        <span>SOLD OUT</span>
+                        <span className="text-[10px] tracking-normal opacity-90 mt-1">Booked on Realprop</span>
+                    </div>
+                </div>
+            )}
+
             <div className="p-5">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-3">

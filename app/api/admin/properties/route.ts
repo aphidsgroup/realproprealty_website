@@ -65,6 +65,7 @@ function sanitizePropertyData(body: any) {
         isBachelorFriendly: Boolean(body.isBachelorFriendly),
         isPetFriendly: Boolean(body.isPetFriendly),
         isVegOnly: Boolean(body.isVegOnly),
+        isSold: Boolean(body.isSold),
     };
 }
 

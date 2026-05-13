@@ -127,6 +127,11 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     )}
                     {/* Trust Badges */}
                     <div className="flex flex-wrap items-center gap-2 mt-2">
+                        {property.isSold && (
+                            <span className="px-3 py-1.5 bg-orange-600 text-white text-sm font-black rounded-full shadow-lg border-2 border-white uppercase tracking-widest animate-pulse">
+                                SOLD OUT
+                            </span>
+                        )}
                         {property.isVerified && <VerifiedBadge size="lg" />}
                         {property.isBachelorFriendly && (
                             <span className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-sm font-bold rounded-full">🎓 Bachelor Friendly</span>

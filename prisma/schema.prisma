@@ -67,6 +67,7 @@ model Property {
   isVegOnly       Boolean  @default(false)
   isPublished     Boolean  @default(false)
   isFeatured      Boolean  @default(false)
+  isSold          Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   shortlists      Shortlist[]

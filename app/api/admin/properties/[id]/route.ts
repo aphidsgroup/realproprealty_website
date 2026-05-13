@@ -35,6 +35,7 @@ function sanitizePropertyData(body: any) {
     if (body.isBachelorFriendly !== undefined) data.isBachelorFriendly = Boolean(body.isBachelorFriendly);
     if (body.isPetFriendly !== undefined) data.isPetFriendly = Boolean(body.isPetFriendly);
     if (body.isVegOnly !== undefined) data.isVegOnly = Boolean(body.isVegOnly);
+    if (body.isSold !== undefined) data.isSold = Boolean(body.isSold);
     if (body.slug !== undefined) data.slug = body.slug;
 
     return data;
