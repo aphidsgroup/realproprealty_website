@@ -22,7 +22,7 @@ export default function SellerForm() {
     const [whatsapp, setWhatsapp] = useState('');
     const [email, setEmail] = useState('');
     const [propertyAddress, setPropertyAddress] = useState('');
-    const [propertyType, setPropertyType] = useState('');
+    const [propertyType, setPropertyType] = useState('Apartment');
 
     // Step 2 – Property Specs
     const [saleType, setSaleType] = useState(''); // Outright Sale / Lease / Both
@@ -52,6 +52,40 @@ export default function SellerForm() {
     const [additionalNotes, setAdditionalNotes] = useState('');
     const [optInWhatsapp, setOptInWhatsapp] = useState(true);
 
+    const isPlot = propertyType === 'Plot / Land';
+    const isCommercial = propertyType === 'Commercial Space';
+
+    const getAmenitiesOptions = () => {
+        if (isPlot) {
+            return [
+                'Gated Community', 'Black Top Roads', 'Street Lights',
+                'Water Connection', 'EB Connection', 'Corner Plot',
+                'Compound Wall', 'Park Area', 'Drainage System'
+            ];
+        } else if (isCommercial) {
+            return [
+                'Power Backup', 'Visitor Parking', 'Central AC',
+                'Security / CCTV', 'Lift / Elevator', 'Cafeteria / Pantry',
+                'Fire Safety', 'IT Park', 'Main Road Facing'
+            ];
+        } else {
+            return [
+                'Lift / Elevator', 'Covered Car Parking', 'Power Backup',
+                'Swimming Pool', 'Gymnasium / Fitness Centre', 'Clubhouse',
+                "Children's Play Area", 'Security / CCTV', 'Gated Community',
+                'Rainwater Harvesting', 'Solar Power', 'Water Softener',
+                'Visitor Parking', 'Intercom', 'Garden / Park Area'
+            ];
+        }
+    };
+
+    const getFurnishingOptions = () => {
+        if (isCommercial) {
+            return ['Fully Furnished', 'Warm Shell', 'Bare Shell'];
+        }
+        return ['Fully Furnished', 'Semi-Furnished', 'Unfurnished'];
+    };
+
     const toggleAmenity = (item: string) =>
         setAmenities(prev => prev.includes(item) ? prev.filter(a => a !== item) : [...prev, item]);
     const toggleBuyer = (item: string) =>
@@ -75,10 +109,17 @@ export default function SellerForm() {
                 propertyAddress,
                 budget: expectedPrice,
                 propertyDetails: JSON.stringify({
-                    saleType, sizeSqft, bhk, bathrooms,
+                    saleType, sizeSqft, 
+                    bhk: isPlot || isCommercial ? '' : bhk, 
+                    bathrooms: isPlot ? '' : bathrooms,
                     parkingType, parkingCount, isNegotiable,
-                    ageOfProperty, furnishing, facing, floorNo, totalFloors,
-                    constructionStatus, possessionDate,
+                    ageOfProperty: isPlot ? '' : ageOfProperty, 
+                    furnishing: isPlot ? '' : furnishing, 
+                    facing, 
+                    floorNo: isPlot || propertyType === 'Villa / Independent House' ? '' : floorNo, 
+                    totalFloors: isPlot || propertyType === 'Villa / Independent House' ? '' : totalFloors,
+                    constructionStatus: isPlot ? '' : constructionStatus, 
+                    possessionDate: isPlot ? '' : possessionDate,
                     amenities, preferredBuyer, loanEligible, additionalNotes,
                 })
             };
@@ -116,7 +157,6 @@ export default function SellerForm() {
     return (
         <div className="min-h-screen bg-[#f5f5f7] font-sans py-8 px-4">
             <div className="max-w-lg mx-auto">
-                {/* Logo Header */}
                 <div className="flex items-center gap-2 mb-6">
                     <img src="/logo.png" alt="Realprop Realty" className="w-9 h-9 object-contain" />
                     <div>
@@ -125,10 +165,8 @@ export default function SellerForm() {
                     </div>
                 </div>
 
-                {/* Title */}
                 <h1 className="text-2xl font-extrabold text-gray-900 mb-1">Property Onboarding Form</h1>
 
-                {/* Progress Bar */}
                 <div className="flex gap-1.5 mb-6">
                     {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
                         <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${i < step ? 'bg-primary-500' : 'bg-gray-200'}`} />
@@ -162,7 +200,10 @@ export default function SellerForm() {
                                     <div className="space-y-2">
                                         {['Apartment', 'Villa / Independent House', 'Plot / Land', 'Commercial Space', 'Row House / Townhouse'].map(t => (
                                             <label key={t} className={radioCardCls(propertyType === t)}>
-                                                <input type="radio" name="propType" value={t} checked={propertyType === t} onChange={() => setPropertyType(t)} className="accent-primary-500" />
+                                                <input type="radio" name="propType" value={t} checked={propertyType === t} onChange={() => {
+                                                    setPropertyType(t);
+                                                    setAmenities([]); // Reset amenities since options change
+                                                }} className="accent-primary-500" />
                                                 {t}
                                             </label>
                                         ))}
@@ -189,22 +230,26 @@ export default function SellerForm() {
                                     <label className={labelCls}>Total Square Feet <span className="text-red-500">*</span></label>
                                     <input required type="number" value={sizeSqft} onChange={e => setSizeSqft(e.target.value)} placeholder="Enter area in sq ft" className={inputCls} />
                                 </div>
-                                <div>
-                                    <label className={labelCls}>Configuration (BHK)</label>
-                                    <div className="grid grid-cols-4 gap-2">
-                                        {['1 BHK', '2 BHK', '3 BHK', '4+ BHK'].map(b => (
-                                            <button key={b} type="button" onClick={() => setBhk(b)} className={`py-3 text-xs font-bold rounded-xl border-2 transition-all ${bhk === b ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-500 hover:border-primary-200'}`}>{b}</button>
-                                        ))}
+                                {!isPlot && !isCommercial && (
+                                    <div>
+                                        <label className={labelCls}>Configuration (BHK)</label>
+                                        <div className="grid grid-cols-4 gap-2">
+                                            {['1 BHK', '2 BHK', '3 BHK', '4+ BHK'].map(b => (
+                                                <button key={b} type="button" onClick={() => setBhk(b)} className={`py-3 text-xs font-bold rounded-xl border-2 transition-all ${bhk === b ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-500 hover:border-primary-200'}`}>{b}</button>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <label className={labelCls}>Number of Bathrooms</label>
-                                    <div className="grid grid-cols-4 gap-2">
-                                        {['1', '2', '3', '4+'].map(b => (
-                                            <button key={b} type="button" onClick={() => setBathrooms(b)} className={`py-3 text-xs font-bold rounded-xl border-2 transition-all ${bathrooms === b ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-500 hover:border-primary-200'}`}>{b}</button>
-                                        ))}
+                                )}
+                                {!isPlot && (
+                                    <div>
+                                        <label className={labelCls}>Number of Bathrooms</label>
+                                        <div className="grid grid-cols-4 gap-2">
+                                            {['1', '2', '3', '4+'].map(b => (
+                                                <button key={b} type="button" onClick={() => setBathrooms(b)} className={`py-3 text-xs font-bold rounded-xl border-2 transition-all ${bathrooms === b ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-500 hover:border-primary-200'}`}>{b}</button>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                                 <div>
                                     <label className={labelCls}>Parking Type <span className="text-red-500">*</span></label>
                                     <div className="grid grid-cols-3 gap-2">
@@ -216,14 +261,14 @@ export default function SellerForm() {
                                         ))}
                                     </div>
                                 </div>
-                                {parkingType !== 'None' && (
+                                {parkingType !== 'None' && parkingType !== '' && (
                                     <div>
                                         <label className={labelCls}>Number of Car Parkings</label>
                                         <input type="number" value={parkingCount} onChange={e => setParkingCount(e.target.value)} placeholder="e.g. 1, 2" className={inputCls} />
                                     </div>
                                 )}
                                 <div>
-                                    <label className={labelCls}>Expected Sale Price (₹) <span className="text-red-500">*</span></label>
+                                    <label className={labelCls}>Expected Sale/Lease Price (₹) <span className="text-red-500">*</span></label>
                                     <input required type="text" value={expectedPrice} onChange={e => setExpectedPrice(e.target.value)} placeholder="e.g. 75,00,000 or 1.2 Crores" className={inputCls} />
                                 </div>
                                 <div>
@@ -243,45 +288,49 @@ export default function SellerForm() {
                         {/* ── STEP 3: Property Condition ── */}
                         {step === 3 && (
                             <div className="space-y-5">
-                                <div>
-                                    <label className={labelCls}>Age of Property <span className="text-red-500">*</span></label>
-                                    <div className="space-y-2">
-                                        {['New / Under Construction', 'Less than 1 Year', '1–5 Years', '5–10 Years', '10+ Years'].map(a => (
-                                            <label key={a} className={radioCardCls(ageOfProperty === a)}>
-                                                <input type="radio" name="age" value={a} checked={ageOfProperty === a} onChange={() => setAgeOfProperty(a)} className="accent-primary-500" />
-                                                {a}
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className={labelCls}>Construction Status</label>
-                                    <div className="space-y-2">
-                                        {['Ready to Move', 'Under Construction', 'Upcoming'].map(c => (
-                                            <label key={c} className={radioCardCls(constructionStatus === c)}>
-                                                <input type="radio" name="constStatus" value={c} checked={constructionStatus === c} onChange={() => setConstructionStatus(c)} className="accent-primary-500" />
-                                                {c}
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-                                {constructionStatus === 'Under Construction' && (
-                                    <div>
-                                        <label className={labelCls}>Expected Possession Date</label>
-                                        <input type="month" value={possessionDate} onChange={e => setPossessionDate(e.target.value)} className={inputCls} />
-                                    </div>
+                                {!isPlot && (
+                                    <>
+                                        <div>
+                                            <label className={labelCls}>Age of Property <span className="text-red-500">*</span></label>
+                                            <div className="space-y-2">
+                                                {['New / Under Construction', 'Less than 1 Year', '1–5 Years', '5–10 Years', '10+ Years'].map(a => (
+                                                    <label key={a} className={radioCardCls(ageOfProperty === a)}>
+                                                        <input type="radio" name="age" value={a} checked={ageOfProperty === a} onChange={() => setAgeOfProperty(a)} className="accent-primary-500" />
+                                                        {a}
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className={labelCls}>Construction Status</label>
+                                            <div className="space-y-2">
+                                                {['Ready to Move', 'Under Construction', 'Upcoming'].map(c => (
+                                                    <label key={c} className={radioCardCls(constructionStatus === c)}>
+                                                        <input type="radio" name="constStatus" value={c} checked={constructionStatus === c} onChange={() => setConstructionStatus(c)} className="accent-primary-500" />
+                                                        {c}
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        {constructionStatus === 'Under Construction' && (
+                                            <div>
+                                                <label className={labelCls}>Expected Possession Date</label>
+                                                <input type="month" value={possessionDate} onChange={e => setPossessionDate(e.target.value)} className={inputCls} />
+                                            </div>
+                                        )}
+                                        <div>
+                                            <label className={labelCls}>Furnishing Status <span className="text-red-500">*</span></label>
+                                            <div className="space-y-2">
+                                                {getFurnishingOptions().map(f => (
+                                                    <label key={f} className={radioCardCls(furnishing === f)}>
+                                                        <input type="radio" name="furnish" value={f} checked={furnishing === f} onChange={() => setFurnishing(f)} className="accent-primary-500" />
+                                                        {f}
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </>
                                 )}
-                                <div>
-                                    <label className={labelCls}>Furnishing Status <span className="text-red-500">*</span></label>
-                                    <div className="space-y-2">
-                                        {['Unfurnished', 'Semi-Furnished', 'Fully Furnished'].map(f => (
-                                            <label key={f} className={radioCardCls(furnishing === f)}>
-                                                <input type="radio" name="furnish" value={f} checked={furnishing === f} onChange={() => setFurnishing(f)} className="accent-primary-500" />
-                                                {f}
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
                                 <div>
                                     <label className={labelCls}>Facing Direction</label>
                                     <div className="grid grid-cols-4 gap-2">
@@ -290,16 +339,18 @@ export default function SellerForm() {
                                         ))}
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label className={labelCls}>Floor No.</label>
-                                        <input type="text" value={floorNo} onChange={e => setFloorNo(e.target.value)} placeholder="e.g. 3, Ground" className={inputCls} />
+                                {!isPlot && propertyType !== 'Villa / Independent House' && (
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className={labelCls}>Floor No.</label>
+                                            <input type="text" value={floorNo} onChange={e => setFloorNo(e.target.value)} placeholder="e.g. 3, Ground" className={inputCls} />
+                                        </div>
+                                        <div>
+                                            <label className={labelCls}>Total Floors</label>
+                                            <input type="number" value={totalFloors} onChange={e => setTotalFloors(e.target.value)} placeholder="e.g. 10" className={inputCls} />
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label className={labelCls}>Total Floors</label>
-                                        <input type="number" value={totalFloors} onChange={e => setTotalFloors(e.target.value)} placeholder="e.g. 10" className={inputCls} />
-                                    </div>
-                                </div>
+                                )}
                             </div>
                         )}
 
@@ -309,13 +360,7 @@ export default function SellerForm() {
                                 <div>
                                     <label className={labelCls}>Available Amenities</label>
                                     <div className="space-y-2">
-                                        {[
-                                            'Lift / Elevator', 'Covered Car Parking', 'Power Backup',
-                                            'Swimming Pool', 'Gymnasium / Fitness Centre', 'Clubhouse',
-                                            "Children's Play Area", 'Security / CCTV', 'Gated Community',
-                                            'Rainwater Harvesting', 'Solar Power', 'Water Softener',
-                                            'Visitor Parking', 'Intercom', 'Garden / Park Area'
-                                        ].map(item => (
+                                        {getAmenitiesOptions().map(item => (
                                             <label key={item} className={checkCardCls(amenities.includes(item))}>
                                                 <input type="checkbox" checked={amenities.includes(item)} onChange={() => toggleAmenity(item)} className="accent-primary-500 w-4 h-4 flex-shrink-0" />
                                                 {item}
@@ -324,7 +369,7 @@ export default function SellerForm() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className={labelCls}>Preferred Buyer Type</label>
+                                    <label className={labelCls}>Preferred Buyer/Tenant Type</label>
                                     <div className="space-y-2">
                                         {['Any', 'Family Only', 'Bachelors Allowed', 'Investors', 'Corporate / Business'].map(item => (
                                             <label key={item} className={checkCardCls(preferredBuyer.includes(item))}>
@@ -335,7 +380,7 @@ export default function SellerForm() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className={labelCls}>Home Loan Eligible?</label>
+                                    <label className={labelCls}>Home Loan Approved / Eligible Project?</label>
                                     <div className="grid grid-cols-2 gap-2">
                                         {['Yes', 'No'].map(v => (
                                             <label key={v} className={radioCardCls(loanEligible === v)}>
@@ -368,14 +413,14 @@ export default function SellerForm() {
                                         ['Name', ownerName], ['WhatsApp', whatsapp], ['Email', email],
                                         ['Property Type', propertyType], ['Purpose', saleType],
                                         ['Size', sizeSqft ? `${sizeSqft} sq ft` : '—'],
-                                        ['Configuration', bhk || '—'],
+                                        ...(isPlot || isCommercial ? [] : [['Configuration', bhk || '—']]),
                                         ['Expected Price', expectedPrice || '—'],
-                                        ['Furnishing', furnishing || '—'],
-                                        ['Age', ageOfProperty || '—'],
+                                        ...(isPlot ? [] : [['Furnishing', furnishing || '—']]),
+                                        ...(isPlot ? [] : [['Age', ageOfProperty || '—']]),
                                     ].map(([k, v]) => (
-                                        <div key={k} className="flex justify-between">
+                                        <div key={k as string} className="flex justify-between">
                                             <span className="text-gray-500">{k}</span>
-                                            <span className="font-semibold text-gray-800 text-right max-w-[55%] truncate">{v}</span>
+                                            <span className="font-semibold text-gray-800 text-right max-w-[55%] truncate">{v as React.ReactNode}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -383,7 +428,7 @@ export default function SellerForm() {
                         )}
 
                         {/* Navigation Buttons */}
-                        <div className={`flex gap-3 pt-2 ${step === 1 ? '' : ''}`}>
+                        <div className={`flex gap-3 pt-2`}>
                             {step > 1 && (
                                 <button type="button" onClick={prevStep} className="flex-1 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-all text-sm">
                                     Back

@@ -21,13 +21,13 @@ export default function BuyerForm() {
     const [buyerName, setBuyerName] = useState('');
     const [whatsapp, setWhatsapp] = useState('');
     const [email, setEmail] = useState('');
-    const [buyerType, setBuyerType] = useState(''); // First-time, Upgrading, Investor
+    const [buyerType, setBuyerType] = useState('');
 
     // Step 2 – Property Requirements
-    const [purpose, setPurpose] = useState(''); // Self-use, Investment
-    const [propertyType, setPropertyType] = useState(''); // Apartment, Villa, Plot, Commercial
+    const [purpose, setPurpose] = useState('');
+    const [propertyType, setPropertyType] = useState('Apartment'); // Default to Apartment
     const [budget, setBudget] = useState('');
-    const [financing, setFinancing] = useState(''); // Pre-approved Loan, Need Loan, Self-funded
+    const [financing, setFinancing] = useState('');
 
     // Step 3 – Space & Configuration
     const [bhk, setBhk] = useState<string[]>([]);
@@ -43,6 +43,38 @@ export default function BuyerForm() {
     // Step 5 – Additional Details
     const [additionalNotes, setAdditionalNotes] = useState('');
     const [optInWhatsapp, setOptInWhatsapp] = useState(true);
+
+    const isPlot = propertyType === 'Plot / Land';
+    const isCommercial = propertyType === 'Commercial Space';
+
+    const getAmenitiesOptions = () => {
+        if (isPlot) {
+            return [
+                'Gated Community', 'Black Top Roads', 'Street Lights',
+                'Water Connection', 'EB Connection', 'Corner Plot',
+                'Compound Wall', 'Park Area', 'Drainage System'
+            ];
+        } else if (isCommercial) {
+            return [
+                'Power Backup', 'Visitor Parking', 'Central AC',
+                'Security / CCTV', 'Lift / Elevator', 'Cafeteria / Pantry',
+                'Fire Safety', 'IT Park', 'Main Road Facing'
+            ];
+        } else {
+            return [
+                'Gated Community', 'Covered Car Parking', 'Power Backup',
+                'Swimming Pool', 'Gym / Fitness Centre', 'Clubhouse',
+                'Security / CCTV', 'Near Metro Station', 'Vastu Compliant'
+            ];
+        }
+    };
+
+    const getFurnishingOptions = () => {
+        if (isCommercial) {
+            return ['Fully Furnished', 'Bare Shell', 'Warm Shell', 'Does Not Matter'];
+        }
+        return ['Fully Furnished', 'Semi-Furnished', 'Unfurnished', 'Does Not Matter'];
+    };
 
     const toggleBhk = (item: string) =>
         setBhk(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]);
@@ -71,7 +103,9 @@ export default function BuyerForm() {
                 timeline,
                 propertyDetails: JSON.stringify({
                     purpose, financing,
-                    bhk, minSqft, preferredFacing, furnishing,
+                    bhk: isPlot || isCommercial ? [] : bhk,
+                    minSqft, preferredFacing,
+                    furnishing: isPlot ? '' : furnishing,
                     mustHaveAmenities, additionalNotes
                 })
             };
@@ -109,7 +143,6 @@ export default function BuyerForm() {
     return (
         <div className="min-h-screen bg-[#f5f5f7] font-sans py-8 px-4">
             <div className="max-w-lg mx-auto">
-                {/* Logo Header */}
                 <div className="flex items-center gap-2 mb-6">
                     <img src="/logo.png" alt="Realprop Realty" className="w-9 h-9 object-contain" />
                     <div>
@@ -118,10 +151,8 @@ export default function BuyerForm() {
                     </div>
                 </div>
 
-                {/* Title */}
                 <h1 className="text-2xl font-extrabold text-gray-900 mb-1">Find Your Perfect Property</h1>
 
-                {/* Progress Bar */}
                 <div className="flex gap-1.5 mb-6">
                     {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
                         <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${i < step ? 'bg-primary-500' : 'bg-gray-200'}`} />
@@ -179,7 +210,10 @@ export default function BuyerForm() {
                                     <div className="space-y-2">
                                         {['Apartment', 'Villa / Independent House', 'Plot / Land', 'Commercial Space'].map(t => (
                                             <label key={t} className={radioCardCls(propertyType === t)}>
-                                                <input type="radio" name="propType" value={t} checked={propertyType === t} onChange={() => setPropertyType(t)} className="accent-primary-500" />
+                                                <input type="radio" name="propType" value={t} checked={propertyType === t} onChange={() => {
+                                                    setPropertyType(t);
+                                                    setMustHaveAmenities([]); // Reset amenities since options change
+                                                }} className="accent-primary-500" />
                                                 {t}
                                             </label>
                                         ))}
@@ -214,15 +248,17 @@ export default function BuyerForm() {
                         {/* ── STEP 3: Space & Configuration ── */}
                         {step === 3 && (
                             <div className="space-y-5">
-                                <div>
-                                    <label className={labelCls}>Preferred Configuration (BHK)</label>
-                                    <p className="text-xs text-gray-500 mb-2">You can select multiple options.</p>
-                                    <div className="grid grid-cols-4 gap-2">
-                                        {['1 BHK', '2 BHK', '3 BHK', '4+ BHK'].map(b => (
-                                            <button key={b} type="button" onClick={() => toggleBhk(b)} className={`py-3 text-xs font-bold rounded-xl border-2 transition-all ${bhk.includes(b) ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-500 hover:border-primary-200'}`}>{b}</button>
-                                        ))}
+                                {!isPlot && !isCommercial && (
+                                    <div>
+                                        <label className={labelCls}>Preferred Configuration (BHK)</label>
+                                        <p className="text-xs text-gray-500 mb-2">You can select multiple options.</p>
+                                        <div className="grid grid-cols-4 gap-2">
+                                            {['1 BHK', '2 BHK', '3 BHK', '4+ BHK'].map(b => (
+                                                <button key={b} type="button" onClick={() => toggleBhk(b)} className={`py-3 text-xs font-bold rounded-xl border-2 transition-all ${bhk.includes(b) ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-500 hover:border-primary-200'}`}>{b}</button>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                                 <div>
                                     <label className={labelCls}>Minimum Size (Sq. ft.)</label>
                                     <input type="number" value={minSqft} onChange={e => setMinSqft(e.target.value)} placeholder="e.g. 1000" className={inputCls} />
@@ -242,17 +278,19 @@ export default function BuyerForm() {
                                         ))}
                                     </div>
                                 </div>
-                                <div>
-                                    <label className={labelCls}>Furnishing Preference</label>
-                                    <div className="space-y-2">
-                                        {['Fully Furnished', 'Semi-Furnished', 'Unfurnished', 'Does Not Matter'].map(f => (
-                                            <label key={f} className={radioCardCls(furnishing === f)}>
-                                                <input type="radio" name="furnish" value={f} checked={furnishing === f} onChange={() => setFurnishing(f)} className="accent-primary-500" />
-                                                {f}
-                                            </label>
-                                        ))}
+                                {!isPlot && (
+                                    <div>
+                                        <label className={labelCls}>Furnishing Preference</label>
+                                        <div className="space-y-2">
+                                            {getFurnishingOptions().map(f => (
+                                                <label key={f} className={radioCardCls(furnishing === f)}>
+                                                    <input type="radio" name="furnish" value={f} checked={furnishing === f} onChange={() => setFurnishing(f)} className="accent-primary-500" />
+                                                    {f}
+                                                </label>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         )}
 
@@ -275,13 +313,9 @@ export default function BuyerForm() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className={labelCls}>Must-have Amenities</label>
+                                    <label className={labelCls}>{isCommercial ? 'Required Amenities' : 'Must-have Amenities'}</label>
                                     <div className="space-y-2">
-                                        {[
-                                            'Gated Community', 'Covered Car Parking', 'Power Backup',
-                                            'Swimming Pool', 'Gym / Fitness Centre', 'Clubhouse',
-                                            'Security / CCTV', 'Near Metro Station', 'Vastu Compliant'
-                                        ].map(item => (
+                                        {getAmenitiesOptions().map(item => (
                                             <label key={item} className={checkCardCls(mustHaveAmenities.includes(item))}>
                                                 <input type="checkbox" checked={mustHaveAmenities.includes(item)} onChange={() => toggleAmenity(item)} className="accent-primary-500 w-4 h-4 flex-shrink-0" />
                                                 {item}
@@ -297,7 +331,7 @@ export default function BuyerForm() {
                             <div className="space-y-5">
                                 <div>
                                     <label className={labelCls}>Any Specific Requirements? (Optional)</label>
-                                    <textarea value={additionalNotes} onChange={e => setAdditionalNotes(e.target.value)} placeholder="e.g. Pet-friendly, strictly veg, near schools, corner apartment, ground floor only..." rows={4} className={inputCls + ' resize-none'} />
+                                    <textarea value={additionalNotes} onChange={e => setAdditionalNotes(e.target.value)} placeholder={isPlot ? "e.g. Corner plot, wide roads, specific zone..." : "e.g. Pet-friendly, strictly veg, near schools, ground floor only..."} rows={4} className={inputCls + ' resize-none'} />
                                 </div>
                                 <div className="bg-green-50 border border-green-100 rounded-xl p-4 flex items-start gap-3">
                                     <input type="checkbox" id="waCb" checked={optInWhatsapp} onChange={e => setOptInWhatsapp(e.target.checked)} className="w-5 h-5 accent-green-500 mt-0.5 flex-shrink-0" />
@@ -313,11 +347,11 @@ export default function BuyerForm() {
                                         ['Looking for', propertyType], ['Budget', budget],
                                         ['Areas', preferredAreas ? preferredAreas : '—'],
                                         ['Timeline', timeline || '—'],
-                                        ['BHK', bhk.length ? bhk.join(', ') : '—'],
+                                        ...(isPlot || isCommercial ? [] : [['BHK', bhk.length ? bhk.join(', ') : '—']]),
                                     ].map(([k, v]) => (
-                                        <div key={k} className="flex justify-between">
+                                        <div key={k as string} className="flex justify-between">
                                             <span className="text-gray-500">{k}</span>
-                                            <span className="font-semibold text-gray-800 text-right max-w-[55%] truncate">{v}</span>
+                                            <span className="font-semibold text-gray-800 text-right max-w-[55%] truncate">{v as React.ReactNode}</span>
                                         </div>
                                     ))}
                                 </div>
