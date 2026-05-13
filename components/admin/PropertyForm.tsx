@@ -184,7 +184,8 @@ export default function PropertyForm({ property, mode }: PropertyFormProps) {
                 throw new Error(errorData.details || errorData.error || 'Failed to save property');
             }
 
-            router.push('/admin/properties');
+            const isManagerPath = window.location.pathname.startsWith('/manager');
+            router.push(isManagerPath ? '/manager' : '/admin/properties');
             router.refresh();
         } catch (error) {
             console.error('Error saving property:', error);
