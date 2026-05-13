@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { isAdmin, hashPassword } from '@/lib/auth';
+import { isAdmin, isAdminOrManager, hashPassword } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
 // GET: List all managers
 export async function GET() {
     try {
-        if (!(await isAdmin())) {
+        if (!(await isAdminOrManager())) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
