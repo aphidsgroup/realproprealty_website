@@ -24,7 +24,7 @@ export default function ManagerDashboard() {
             const meRes = await fetch('/api/auth/me');
             const meData = await meRes.json();
             if (!meData.user || meData.user.role !== 'manager') {
-                router.push('/admin/login');
+                router.push('/manager/login');
                 return;
             }
             setUser(meData.user);
@@ -44,7 +44,7 @@ export default function ManagerDashboard() {
 
     const handleLogout = async () => {
         await fetch('/api/auth/logout', { method: 'POST' });
-        router.push('/admin/login');
+        router.push('/manager/login');
     };
 
     const handleVerify = async (id: string) => {
