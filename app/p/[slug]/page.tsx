@@ -11,6 +11,7 @@ import CarouselWrapper from '@/components/CarouselWrapper';
 import ViewAllButton from '@/components/ViewAllButton';
 import SiteHeader from '@/components/SiteHeader';
 import FloatingShortlistButton from '@/components/FloatingShortlistButton';
+import PropertyStatsBar from '@/components/PropertyStatsBar';
 
 // ISR: Cache page at edge, revalidate every 60 seconds
 export const revalidate = 60;
@@ -132,6 +133,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                         </p>
                     )}
                 </div>
+
+                {/* Stats Bar */}
+                <PropertyStatsBar slug={slug} />
 
                 {/* 360° Tour */}
                 <div className="mb-8">
