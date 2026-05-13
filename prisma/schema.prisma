@@ -36,36 +36,41 @@ model Manager {
   passwordHash String
   permissions  String   @default("{\"viewUsers\":true,\"viewShortlists\":true,\"viewLeads\":true}")
   isActive     Boolean  @default(true)
-  createdBy    String   // Admin ID who created this manager
+  createdBy    String
   createdAt    DateTime @default(now())
 }
 
 model Property {
-  id              String   @id @default(cuid())
-  slug            String   @unique
-  title           String
-  usageType       String   // "residential" or "commercial"
-  propertySubtype String?  // e.g., "apartment", "villa", "office"
-  areaName        String
-  city            String   @default("Chennai")
-  priceInr        Int      // Sale price
-  sizeSqft        Int
-  bedrooms        Int?
-  bathrooms       Int?
-  parking         String?  // e.g., "2 covered", "1 open"
-  amenities       String   // JSON array as string
-  tourEmbedUrl    String
-  images          String?  // JSON array of image paths
-  floorPlans      String?  // JSON array of floor plan file paths (images and PDFs)
-  facilities      String?  // JSON array of facility names
-  locationAdvantages String? // JSON array of location objects with name, category, distance
-  constructionStatus String? // Construction status: "Under Construction", "Ready to Move", "Upcoming"
-  isNegotiable    Boolean  @default(false)
-  isPublished     Boolean  @default(false)
-  isFeatured      Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  shortlists      Shortlist[]
+  id                 String      @id @default(cuid())
+  slug               String      @unique
+  title              String
+  usageType          String
+  propertySubtype    String?
+  areaName           String
+  city               String      @default("Chennai")
+  priceInr           Int
+  sizeSqft           Int
+  bedrooms           Int?
+  bathrooms          Int?
+  parking            String?
+  amenities          String
+  tourEmbedUrl       String
+  images             String?
+  floorPlans         String?
+  facilities         String?
+  locationAdvantages String?
+  constructionStatus String?
+  isNegotiable       Boolean     @default(false)
+  isVerified         Boolean     @default(false)
+  isBachelorFriendly Boolean     @default(false)
+  isPetFriendly      Boolean     @default(false)
+  isVegOnly          Boolean     @default(false)
+  isPublished        Boolean     @default(false)
+  isFeatured         Boolean     @default(false)
+  isSold             Boolean     @default(false)
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  shortlists         Shortlist[]
 
   @@index([usageType])
   @@index([areaName])
@@ -91,27 +96,79 @@ model LeadFormResponse {
   name         String
   phone        String
   email        String?
-  propertyType String?  // Apartment, Villa/House, Plot/Land, Office, Shop, Other
-  bhk          String?  // 1 BHK, 2 BHK, etc.
-  budget       String?  // Budget range selection
-  location     String?  // Preferred Chennai area
-  timeline     String?  // Purchase timeline
+  propertyType String?
+  bhk          String?
+  budget       String?
+  location     String?
+  timeline     String?
   source       String   @default("popup")
   createdAt    DateTime @default(now())
 }
 
 model SiteSettings {
-  id                   String   @id @default(cuid())
-  brandName            String   @default("Realprop Realty")
-  tagline              String   @default("360° Tours • Premium Properties • Chennai")
-  city                 String   @default("Chennai")
-  whatsappNumber       String   @default("+919876543210")
-  phoneNumber          String   @default("+919876543210")
-  whatsappTemplate     String   @default("Hi, I'm interested in {propertyTitle}. Link: {propertyUrl}")
-  amenitiesVocabulary  String   @default("[\"Lift\",\"Parking\",\"Security\",\"Power Backup\",\"Water Supply\",\"Gym\",\"Swimming Pool\",\"Garden\",\"Play Area\",\"Club House\"]")
-  heroTitle            String?  // Editable hero section title
-  heroSubtitle         String?  // Editable hero subtitle
-  aboutContent         String?  // CMS: About page content
-  contactContent       String?  // CMS: Contact page content
-  updatedAt            DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  brandName           String   @default("Realprop Realty")
+  tagline             String   @default("360 Tours - Premium Properties - Chennai")
+  city                String   @default("Chennai")
+  whatsappNumber      String   @default("+919876543210")
+  phoneNumber         String   @default("+919876543210")
+  whatsappTemplate    String   @default("Hi, I am interested in {propertyTitle}. Link: {propertyUrl}")
+  amenitiesVocabulary String   @default("[\"Lift\",\"Parking\",\"Security\",\"Power Backup\",\"Water Supply\",\"Gym\",\"Swimming Pool\",\"Garden\",\"Play Area\",\"Club House\"]")
+  heroTitle           String?
+  heroSubtitle        String?
+  aboutContent        String?
+  contactContent      String?
+  footerText          String?
+  contentSections     String?
+  updatedAt           DateTime @updatedAt
+}
+
+model OnboardingSubmission {
+  id              String   @id @default(cuid())
+  formType        String
+  status          String   @default("pending")
+  name            String
+  phone           String
+  email           String?
+  optInWhatsapp   Boolean  @default(false)
+  buyerType       String?
+  sellerType      String?
+  propertyType    String?
+  bhk             String?
+  budget          String?
+  areas           String?
+  timeline        String?
+  propertyAddress String?
+  propertyDetails String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Lead {
+  id        String   @id @default(cuid())
+  leadType  String
+  source    String   @default("onboarding_form")
+  status    String   @default("new")
+  name      String
+  phone     String
+  email     String?
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ChangeRequest {
+  id          String   @id @default(cuid())
+  type        String
+  entityType  String
+  entityId    String
+  entityTitle String
+  changes     String   @db.Text
+  reason      String   @db.Text
+  requestedBy String
+  status      String   @default("pending")
+  reviewedBy  String?
+  reviewNote  String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
