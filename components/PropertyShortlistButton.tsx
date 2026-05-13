@@ -66,7 +66,7 @@ export default function PropertyShortlistButton({ propertyId }: PropertyShortlis
         <button
             onClick={handleToggle}
             disabled={loading}
-            className={`fixed top-[120px] right-4 z-30 flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)] transition-all duration-300 ${loading ? 'opacity-70 cursor-wait' : 'cursor-pointer'} animate-in slide-in-from-right-4`}
+            className={`fixed bottom-[88px] right-4 z-30 flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)] transition-all duration-300 ${loading ? 'opacity-70 cursor-wait' : 'cursor-pointer'} animate-in slide-in-from-bottom-4`}
         >
             <div className={`transition-transform duration-300 ${isShortlisted ? 'scale-125' : 'scale-100'}`}>
                 {isShortlisted ? (
