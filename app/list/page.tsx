@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { parseAmenities } from '@/lib/utils';
@@ -11,6 +12,22 @@ import { DealType, UsageType } from '@/lib/types';
 
 // ISR: Cache page at edge, revalidate every 30 seconds
 export const revalidate = 30;
+
+export const metadata: Metadata = {
+    title: 'Property Listings — Realprop Realty | Chennai Buy, Rent & Commercial Spaces',
+    description: 'Browse Realprop Realty property listings in Chennai across residential and commercial categories, with filters for area, budget, size, and property type.',
+    alternates: {
+        canonical: '/list',
+    },
+    openGraph: {
+        title: 'Property Listings — Realprop Realty | Chennai Buy, Rent & Commercial Spaces',
+        description: 'Browse Realprop Realty property listings in Chennai across residential and commercial categories, with filters for area, budget, size, and property type.',
+        url: 'https://www.realproprealty.com/list',
+        siteName: 'Realprop Realty',
+        locale: 'en_IN',
+        type: 'website',
+    },
+};
 
 interface ListPageProps {
     searchParams: Promise<{
